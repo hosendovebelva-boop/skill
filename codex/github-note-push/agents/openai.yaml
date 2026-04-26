@@ -1,0 +1,4 @@
+interface:
+  display_name: "GitHub Note Push"
+  short_description: "Push Obsidian and Markdown notes to GitHub safely"
+  default_prompt: "Use $github-note-push to publish my note repo to GitHub and handle SSH or remote issues if push fails."
