@@ -39,3 +39,18 @@ When the output target is an Obsidian vault or markdown note repo, apply these e
 - Match nearby naming patterns instead of inventing a new one. If a note already uses figure names like `9_1_1.svg`, `9_1_2.svg`, continue that numbered sequence.
 - If the local rule requires a solid background rectangle, include it explicitly. For repos that specify `fill="rgb(245, 244, 237)"`, place that background rectangle at the start of the SVG content.
 - If a local helper skill or script exists for SVG export or background injection, prefer using it. If it is missing, follow the same repo rule manually and say so.
+
+### Vault-Specific SVG Convention
+
+For the current Obsidian vault, all SVGs follow these concrete rules:
+
+- **Storage**: `图片/SVG/` directory (relative to vault root).
+- **Naming**: `{大分类}_{子分类}_{编号}_{序号}.svg` where:
+  - `{大分类}` = top-level section number (e.g., `5` for `5.算法`, `6` for `6.项目`)
+  - `{子分类}` = sub-section index (e.g., `1` for `力扣` under `5.算法`)
+  - `{编号}` = item number (LeetCode problem number, chapter number, etc.)
+  - `{序号}` = sequence within the note, starting at 1
+  - Example: `5_1_146_1.svg` = 5.算法 / 力扣 / 题号146 / 第1张图
+  - Example: `9_1_2.svg` = section 9 / sub 1 / 第2张图
+- **Background**: every SVG must include `<rect width="100%" height="100%" fill="rgb(245, 244, 237)"/>` as its first child element.
+- **Embed syntax**: `![[filename.svg|width]]` (wikilink embed with width hint, typical width 760).

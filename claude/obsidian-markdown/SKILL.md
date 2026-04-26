@@ -187,6 +187,24 @@ The algorithm uses $O(n \log n)$ sorting. See [[Algorithm Notes#Sorting]] for de
 Reviewed in [[Meeting Notes 2024-01-10#Decisions]].
 ````
 
+## SVG Storage and Embedding Convention
+
+When embedding SVG diagrams in Obsidian notes, follow these vault-specific rules:
+
+- **Storage**: all SVGs are stored in `图片/SVG/` (relative to vault root), not beside the note file.
+- **Naming**: `{大分类}_{子分类}_{编号}_{序号}.svg`
+  - `{大分类}` = top-level section number (e.g., `5` for `5.算法`, `6` for `6.项目`)
+  - `{子分类}` = sub-section index (e.g., `1` for `力扣` under `5.算法`)
+  - `{编号}` = item number (problem number, chapter number, etc.)
+  - `{序号}` = sequence within the note, starting at 1
+  - Example: `5_1_213_3.svg` = 5.算法 / 力扣 / 题号213 / 第3张图
+- **Background**: every SVG must include a solid background rectangle: `<rect width="100%" height="100%" fill="rgb(245, 244, 237)"/>` as its first child element.
+- **Embed syntax**: use wikilink embed with width hint:
+  ```markdown
+  ![[5_1_146_1.svg|760]]
+  ```
+- When adding new SVGs to a note, check existing SVGs in `图片/SVG/` to determine the next available sequence number.
+
 ## References
 
 - [Obsidian Flavored Markdown](https://help.obsidian.md/obsidian-flavored-markdown)
