@@ -1,0 +1,4 @@
+interface:
+  display_name: "SVG Designer"
+  short_description: "Polished SVG diagrams; route timing-heavy cases to Mermaid"
+  default_prompt: "Use $svg-designer to choose SVG or Mermaid, produce a polished Chinese-labeled diagram, and validate the final SVG when applicable."

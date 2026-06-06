@@ -1,4 +1,4 @@
-interface:
+﻿interface:
   display_name: "Remote Ctrl Note"
   short_description: "Analyze remote-control code and maintain project notes"
   default_prompt: "Use $remote-ctrl-note to inspect remote-control project changes and update the matching Obsidian notes."

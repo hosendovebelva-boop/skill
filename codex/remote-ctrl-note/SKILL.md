@@ -54,10 +54,6 @@ In practice:
 15. When a commit contains both mechanism evolution and bug fixes, keep the main numbered note focused on the mechanism/storyline; move the detailed bug autopsy into bug notes or debug notes and link to them instead of dumping every bug detail into the main note.
 16. Unless the user explicitly asks to keep the final note in English, always use an English-first drafting step followed by a polished technical-Chinese final version.
 17. In the final Chinese note, translate visible labels inside Mermaid and visible text inside SVG as well; do not leave mixed-language diagrams unless the user explicitly wants that.
-18. When the target note repo or vault has local SVG workflow rules, follow them before using a generic diagram workflow. In particular, if raw `<svg>...</svg>` should be exported to assets, externalize the SVG and replace it with an Obsidian embed.
-19. For Obsidian note repos that store note assets under `图片/` and SVGs under `图片/SVG/`, place generated SVGs there, not beside the note markdown.
-20. When a note already has numbered SVG figures such as `9_1_1.svg`, `9_1_2.svg`, continue that local numbering scheme for new diagrams instead of inventing unrelated file names.
-21. If the local SVG rule requires a solid background rectangle, add it explicitly. For repos that specify `fill="rgb(245, 244, 237)"`, make that rectangle the base layer of the SVG.
 
 ## Template Selection
 
@@ -245,8 +241,6 @@ Check all of the following:
 - Repeated concepts are linked, not copied.
 - Empty template sections were removed.
 - If the change fixed a bug, the corresponding `Debug-XXX` note and backlinks are present.
-- If the note uses SVG diagrams, the SVG files are stored in the vault's required asset directory, embedded back into the note correctly, and follow the nearby numbering convention.
-- If the vault has a required SVG background rule, confirm the exported files include that background rectangle.
 
 ## Bug-Fix Handling
 

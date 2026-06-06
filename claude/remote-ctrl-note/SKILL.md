@@ -1,327 +1,274 @@
 ---
 name: remote-ctrl-note
-description: Create, update, and cross-link Obsidian notes for the remote-control project at `D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl`. Use when Codex needs to sync Git/code changes into `D:\obsidian\C++\6.项目\远控系统`, analyze the MFC/Winsock/Win32 codebase into project notes, create or update numbered feature notes, or record bug-fix work as `Debug-XXX` notes. This skill also decides when to use `远控系统模版笔记.md` versus `远控系统Debug日志模版.md`, and how to produce an English-first draft followed by a polished technical-Chinese version.
+description: |
+  远控系统项目专用笔记管理 Skill。当用户需要以下操作时使用此 Skill：
+  - 为远控项目写笔记、更新笔记
+  - 分析 git 提交并同步到笔记
+  - 记录 Bug 修复过程
+  触发词：远控笔记、远控系统笔记、更新远控笔记、远控项目、分析远控
 ---
 
-# Remote Ctrl Note
+# Remote-Ctrl-Note — 远控系统项目笔记管理
 
-Use this skill for the Windows remote-control project and its Obsidian notes. Read Git and changed code first, then map the result into the existing note structure without repeating material that already has a good note.
+## 核心原则
 
-Default note-output workflow:
+1. **先读 Git，再读代码**：通过 git diff 精准定位变更，不读无关文件
+2. **链路优先，代码其次**：先把请求→网络→响应→回调的完整链路讲顺，再进代码细节
+3. **Mermaid 优先 SVG**：多方交互用 `sequenceDiagram`，机制对比用 `flowchart`；只有局部结构补充才用 SVG 绘制
+4. **不重复已讲内容**：已有笔记中的概念用 `[[wiki-link]]` 引用，不展开
+5. **Bug 下沉**：主笔记只保留 Bug 结论和入口链接，详细过程进 Debug 日志
+6. **教学口吻**：直白好懂，带着读者走一遍，不故作高深，不用奇怪比喻
 
-1. Read Git and changed code first.
-2. Build the note structure and mechanism explanation in English first.
-3. Then translate and rewrite that draft into natural, polished technical Chinese unless the user explicitly asks for an English final note.
-4. Treat the Chinese version as the default final delivery.
+---
 
-This is a project workflow skill, not a full Obsidian-operation skill by itself. In note tasks, pair it conceptually with:
+## 项目信息
 
-- `obsidian-markdown` when writing or restructuring Obsidian-flavored markdown, frontmatter, wikilinks, callouts, and note-friendly section layout
-- `obsidian-cli` when the task benefits from fast vault search, path confirmation, note creation, bulk lookup, or checking whether an existing note/title/path already exists
+| 项目 | 路径 |
+|------|------|
+| 被控端 | `D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl\RemoteCtrl` |
+| 控制端 | `D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl\RemoteClient` |
+| 笔记根目录 | `D:\obsidian\C++\6.项目\远控系统` |
+| Debug 日志 | `D:\obsidian\C++\6.项目\远控系统\0. Debug日志` |
+| **主笔记模板** | `D:\obsidian\C++\模版\远控系统模版笔记.md` |
+| **Debug 模板** | `D:\obsidian\C++\模版\远控系统Debug日志模版.md` |
 
-In practice:
+---
 
-- Use `remote-ctrl-note` to decide what to write, where to write it, and how it should relate to project code/history
-- Use `obsidian-markdown` thinking when shaping the final note format
-- Use `obsidian-cli` style workflows when locating notes or validating names/links quickly
+## 执行流程
 
-## Fixed Paths
+### 第一步：读 Git 提交
 
-- Project root: `D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl`
-- Server code: `D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl\RemoteCtrl`
-- Client code: `D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl\RemoteClient`
-- Notes root: `D:\obsidian\C++\6.项目\远控系统`
-- Debug notes: `D:\obsidian\C++\6.项目\远控系统\0. Debug日志`
-- Main note template: `D:\obsidian\C++\模版\远控系统模版笔记.md`
-- Debug note template: `D:\obsidian\C++\模版\远控系统Debug日志模版.md`
-
-## Core Rules
-
-1. Read Git history before reading large code files.
-2. Read only changed files and relevant functions, not the whole project by default.
-3. Reuse existing notes with `[[wiki-link]]` instead of repeating prior explanations.
-4. Explain Win32 API, MFC behavior, Winsock flow, threading, and data flow, not just code.
-5. Keep the numbered Chinese naming scheme used by the notes directory.
-6. When the change is mainly a bug fix, create or update a `Debug-XXX` note and link it from the main feature note.
-7. Use Codex shell commands and normal file reads; do not rely on Claude-only `Read` or `Glob` phrasing.
-8. When the note involves architecture sequencing or cross-thread call flow, use diagrams instead of prose only.
-9. Delete irrelevant template sections after inserting a template; never leave empty headings behind.
-10. Prefer SVG or Mermaid over ASCII for mechanism diagrams. For static comparison, architecture, and block-layout diagrams, prefer SVG; for time-ordered interaction, request-response choreography, and thread timing, prefer Mermaid.
-11. When a note introduces Win32 thread/message mechanics, include beginner-friendly API guidance: signatures only when useful, parameter/return meaning in project context, and comparisons such as `PostThreadMessage` vs `PostMessage` vs `SendMessage`, or `GetMessage` vs `PeekMessage`, when those differences matter to the design.
-12. When a numbered note contains a concrete debug story, also create or update a matching note under `D:\obsidian\C++\6.项目\远控系统\0. Debug日志`, record the bug there in debug-log form, and add backlinks both ways between the main note and the debug note.
-13. Prefer a teaching-oriented voice: direct, plain, and easy to follow. Do not write in a stiff or overly academic tone, and do not use strange metaphors or decorative analogies.
-14. For chapter notes, explain the end-to-end chain first: what the request path is, where the response comes back, which thread or window finishes the job, and only then dive into traps or fixes.
-15. When a commit contains both mechanism evolution and bug fixes, keep the main numbered note focused on the mechanism/storyline; move the detailed bug autopsy into bug notes or debug notes and link to them instead of dumping every bug detail into the main note.
-16. Unless the user explicitly asks to keep the final note in English, always use an English-first drafting step followed by a polished technical-Chinese final version.
-17. In the final Chinese note, translate visible labels inside Mermaid and visible text inside SVG as well; do not leave mixed-language diagrams unless the user explicitly wants that.
-18. When the target note repo or vault has local SVG workflow rules, follow them before using a generic diagram workflow. In particular, if raw `<svg>...</svg>` should be exported to assets, externalize the SVG and replace it with an Obsidian embed.
-19. For Obsidian note repos that store note assets under `图片/` and SVGs under `图片/SVG/`, place generated SVGs there, not beside the note markdown.
-20. When a note already has numbered SVG figures such as `9_1_1.svg`, `9_1_2.svg`, continue that local numbering scheme for new diagrams instead of inventing unrelated file names.
-21. If the local SVG rule requires a solid background rectangle, add it explicitly. For repos that specify `fill="rgb(245, 244, 237)"`, make that rectangle the base layer of the SVG.
-
-## Template Selection
-
-Use the templates with this split:
-
-- Use `D:\obsidian\C++\模版\远控系统模版笔记.md` for numbered feature notes, subsystem design notes, refactor notes, architecture notes, call-flow notes, and chapter-style notes such as `6.1`, `6.2`, `6.3`, or `6.4`.
-- Use `D:\obsidian\C++\模版\远控系统Debug日志模版.md` for standalone debugging records where the core value is `现象 -> 调试过程 -> 根因 -> 修复 -> 验证`, especially `Debug-XXX` notes under `0. Debug日志`.
-- If one change contains both feature evolution and a concrete bug fix, write both:
-  - the main numbered note with `远控系统模版笔记.md`
-  - the paired `Debug-XXX` note with `远控系统Debug日志模版.md`
-  - backlinks between them
-
-Choose the debug template when most of the note answers these questions:
-
-- How was the bug triggered?
-- How was it narrowed down?
-- What exact root cause made it fail?
-- What code changed to fix it?
-- How was the fix verified?
-
-Choose the main template when most of the note answers these questions:
-
-- What feature or subsystem changed?
-- Why was the design changed?
-- How does the call chain or thread model work now?
-- Which classes, messages, APIs, or packets are involved?
-- What is the current project-stage conclusion?
-
-## Workflow
-
-### 1. Inspect Git first
-
-Run these commands first:
-
-```powershell
-Set-Location "D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl"
+```bash
+cd "D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl"
 git log --oneline -10
 git log -1 --stat
-git diff --name-only HEAD~1 HEAD -- "*.cpp" "*.h"
 git diff HEAD~1 HEAD -- "*.cpp" "*.h"
+# 或指定 commit：
+git show <commit> -- "*.cpp" "*.h"
 ```
 
-Use the commit message and diff to answer:
+用 diff 判断：新功能 / 重构 / Bug 修复？哪些文件真正有变化？
 
-- What new feature or behavior changed?
-- Which files actually matter?
-- Is this a bug fix, refactor, or new capability?
+### 第二步：只读有变化的文件
 
-### 2. Read only the changed code
+根据 diff 结果，只打开发生变化的函数和类。
 
-After the diff, open only the changed `.cpp` and `.h` files, then narrow to the relevant functions, classes, and call chain.
+### 第三步：检查已有笔记
 
-Prefer commands like:
+参考本文末的**已有笔记索引**，确认哪些内容已有笔记，避免重复。
 
-```powershell
-rg --line-number "关键函数名|类名|命令码" "D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl"
+### 第四步：选模板，决定笔记类型
+
+| 场景 | 模板 | 笔记位置 |
+|------|------|---------|
+| 新功能 / 架构 / 链路演进 / 重构 | `远控系统模版笔记.md` | 对应章节目录 |
+| Bug 修复为主 | `远控系统Debug日志模版.md` | `0. Debug日志/Debug-XXX xxx.md` |
+| 两者兼有 | 两个都建，互相链接 | 各自位置 |
+
+判断依据：
+- **主笔记**回答：功能怎么变了？链路现在怎么走？哪个类负责什么？
+- **Debug 日志**回答：怎么触发的？怎么排查的？根因是什么？怎么验证的？
+
+### 第五步：写笔记
+
+---
+
+## 主笔记写作规范
+
+基于 `远控系统模版笔记.md`，按以下顺序写，不相关的章节直接删掉：
+
+### 推荐教学顺序
+
+```
+1. 先说这次改了什么        ← 表格，让读者建立全局印象
+2. 和上一版是什么关系      ← 对比表 + 旧/新机制 flowchart
+3. 先把主链路讲顺          ← sequenceDiagram，再配自然语言
+4. 核心实现                ← 小块代码 + 逐段讲解
+5. 如果这次还带了 bug      ← 只放结论和 [[Debug-XXX]] 入口
+6. 当前版本的准确结论      ← 做对了什么，还没收口什么
+7. Win32/Winsock/MFC 机制  ← 只讲本篇真正需要的 API
+8. 易错点与调试
+9. 代码索引
 ```
 
-### 3. Check existing notes before writing
+### 第 2 节：旧/新机制对比
 
-Search the current note set before creating anything new:
+对比时用 SVG 画图，让读者一眼看懂：谁阻塞、谁不阻塞、响应归谁处理。
 
-```powershell
-rg --files "D:\obsidian\C++\6.项目\远控系统"
-rg --line-number "关键字|函数名|类名|命令码" "D:\obsidian\C++\6.项目\远控系统"
+
+### 第 3 节：主链路时序图
+
+**每篇主笔记都应有链路时序图**。用 `sequenceDiagram`，节点名称对应项目真实的类/线程/函数名：
+
+```mermaid
+sequenceDiagram
+    participant UI as UI线程 / 调用方
+    participant Ctrl as CClientController
+    participant Net as 网络线程 (CClientSocket)
+    participant Server as 服务端 (RemoteCtrl)
+    participant Target as 目标窗口 / 回调方
+
+    UI->>Ctrl: 用户操作
+    Ctrl->>Net: PostThreadMessage(WM_SEND_PACK)
+    Net->>Server: send(CPacket)
+    Server-->>Net: recv(响应包)
+    Net->>Target: SendMessage(WM_SEND_PACK_ACK, CPacket*)
+    Target->>Target: OnSendPackAck → 更新UI/写文件
 ```
 
-Treat this step as the point where `obsidian-cli`-style help is especially useful:
+### 第 4 节：核心实现代码规范
 
-- quickly confirm whether a note already exists
-- verify the exact title/path before writing wikilinks
-- locate nearby chapter notes, bug notes, templates, and summaries
-- avoid creating duplicate note names that differ only slightly
+代码要拆成小块，每块都要有讲解，顺序从整体到细节：
 
-Start with these anchor notes when the topic matches:
+```cpp
+void SomeFunction(...)
+{
+    // ===== 1. 这一步在链路中的作用 =====
+    // 先说"负责什么"，不要上来就掉进局部细节
 
-- `[[2.1 网络编程基本设计]]`
-- `[[2.2 网络编程架构设计]]`
-- `[[2.3 设计网络传输包协议]]`
-- `[[2.4 获取磁盘分区信息]]`
-- `[[3.1 锁机处理]]`
-- `[[4.1 文件下载功能的实现]]`
-- `[[4.4 远程桌面显示功能设计与数据接收发送]]`
-- `[[4.8 鼠标远程控制（被控端）与 Bug 修复]]`
+    // ===== 2. 关键处理步骤 =====
+    // 依赖了什么 API 或框架机制
 
-### 4. Decide the note target
+    // ===== 3. 容易出错的细节 =====
+    // 涉及线程/消息/生命周期/协议边界时直接点出
+}
+```
 
-Use this decision rule:
+每段代码后按顺序讲：
+1. **整体职责**：在链路中负责哪一段
+2. **输入和输出**：接收什么，结果交给谁
+3. **关键步骤**：按顺序做了几件事
+4. **API 说明**：用到了什么 Win32/MFC/Winsock API，为什么选它（而不是旁边那个）
+5. **风险点**：这里最容易出 Bug 的地方
 
-- New feature or new subsystem: create a new numbered note in the matching topic folder with the main note template.
-- Existing feature extended or cleaned up: update the existing note and keep the main note template structure.
-- Pure bug fix or debugging-heavy change: create or extend a `Debug-XXX` note with the debug note template, then add a short summary link in the main feature note if needed.
-- Mixed feature and bug fix: keep feature design in the main note, move the debugging narrative into `Debug-XXX`.
+---
 
-### 5. Write the note
+## Debug 日志写作规范
 
-For the main note template, keep the sections that match the topic and delete the rest. The usual high-value sections are:
+基于 `远控系统Debug日志模版.md`，保留以下章节：
 
-- Summary paragraph under the title
-- `功能概述` or `本次提交推进了什么`
-- `设计背景` or `与前一版的关系`
-- `架构设计` or `重构思想`
-- `核心实现`
-- `线程交互与流程`
-- `当前版本的准确结论`
-- `Win32 / Winsock / MFC 关键机制`
-- `易错点与调试`
-- `关联知识`
-- `代码索引`
-- `更新记录`
+```
+Bug 基本信息（表格：编号/严重度/分类/commit/触发条件）
+现象描述（操作步骤 + 可见症状）
+调试过程（按排查顺序，展示如何缩小范围）
+根因分析（问题代码 + 推理链）
+修复方案（修复代码 + 关键点说明）
+修复效果（修复前后对比，简单 Bug 可删）
+底层原理（可选，涉及值得深挖的机制时保留）
+调试经验（可复用的教训，加入 Debug 经验汇总）
+```
 
-For the debug template, keep the investigation narrative tight:
+**编号规则**：Glob `Debug-*.md`，取最大编号 +1。
 
-- `Bug 基本信息`
-- `现象描述`
-- `调试过程`
-- `根因分析`
-- `修复前 / 修复后`
-- `验证结果`
-- `调试经验`
+---
 
-For each important function or behavior, include:
+## 图表使用规范
 
-- What the function does in the overall workflow
-- Why it is designed that way
-- Which APIs or framework mechanisms it depends on
-- What the key parameters or flags mean
-- What can go wrong and how to spot it
+### sequenceDiagram — 多方交互、请求/响应时序
 
-When a note is meant for teaching, favor this structure:
+适合：C/S 通信流程、跨线程消息传递、ACK 回调链路
 
-- First tell the reader what changed in one or two short paragraphs.
-- Then explain the whole path from request to response in simple terms.
-- Then zoom into the key functions and APIs.
-- Then point the reader to dedicated bug notes for the detailed traps and debugging process.
+```mermaid
+sequenceDiagram
+    participant A as 参与者A
+    participant B as 参与者B
+    A->>B: 同步调用（阻塞）
+    A-->>B: 异步/返回（虚线）
+    B->>B: 内部操作
+```
 
-If the repository already has a chapter-local `Bug目录`, use it for local deep dives, while still keeping the global `0. Debug日志` entry when the bug deserves project-level indexing.
+### flowchart — 机制对比、线程流转、单条链路分支
 
-For readability, prefer this teaching order when the topic is complex:
+适合：旧/新机制对比、线程切换点、状态机分支
 
-1. Give a one-paragraph conclusion first.
-2. Show the old vs new mechanism contrast visually, preferring SVG for static side-by-side layouts.
-3. Explain the end-to-end chain in plain language before deep code analysis.
-4. Explain the real call chain in code.
-5. End with API semantics, pitfalls, and current-version conclusions.
+```mermaid
+flowchart LR
+    A["发起请求"] --> B{"判断条件"}
+    B -- 成功 --> C["处理结果"]
+    B -- 失败 --> D["错误路径"]
+```
 
-When comparing two mechanisms, do not jump straight into code. First add a dedicated comparison block that makes these answers obvious at a glance:
+### SVG — 仅用于局部结构补充
 
-- Who initiates the request
-- Which thread blocks or does not block
-- How the response is routed back
-- Where ownership or lifetime changes
-- What the new model fixes and what it still leaves unfinished
+适合：缓冲区内存布局、小范围调用链说明。**可以使用 SVG 代替整张机制图。**
 
-When showing code, prefer actual project code with line-accurate explanation. Do not paste a long code block without commentary.
+SVG 箭头默认使用小号空心样式：`markerWidth/markerHeight` 约 6-7，`path` 使用 `fill="none"` + `stroke`，不要使用大号实心三角箭头。
 
-When the topic includes architecture design timing, request/response choreography, or multi-thread call relationships, add diagrams with this priority:
 
-- Use Mermaid `sequenceDiagram` for request/response flow, timing order, startup/shutdown order, and cross-thread callback order.
-- Use Mermaid `flowchart` only when the main value is dynamic branching or handoff timing that would be awkward in SVG.
-- Use SVG for static comparison diagrams, architecture layering, component grouping, fixed-layout mechanism summaries, and side-by-side old/new designs.
-- When contrasting old and new mechanisms, prefer side-by-side SVG unless timing order is the real teaching focus; make blocking points, wake-up points, and response-delivery points explicit.
-- Keep node names aligned with real class, thread, socket, and function names from the project.
+## Bug 修复识别
 
-### 6. Maintain links and indices
+当 diff 中出现以下特征时，触发创建 Debug 日志：
 
-When you create or update a note:
+| 特征 | 示例 |
+|------|------|
+| commit message 含关键词 | `fix` / `bug` / `修复` / `崩溃` |
+| 边界条件修改 | `>` → `>=` |
+| 类型修正 | `int` → `intptr_t` |
+| 资源释放添加 | `delete[]` / `fclose` / `CloseHandle` |
+| 空指针/状态机修复 | 添加 `!= NULL` 判断、状态重置 |
+| memmove/memcpy 参数修正 | 参数顺序、长度计算修正 |
 
-- Add `[[wiki-link]]` references to prior notes that already explain shared concepts.
-- Keep links accurate to existing note names.
-- Update the surrounding summary note when the new note changes the local chapter structure.
-- Keep debug notes under `0. Debug日志`.
-- If a bug or debugging narrative appears in a main numbered note, add or update the dedicated `Debug-XXX` note in `0. Debug日志` and maintain double links:
-  - main note -> `[[Debug-XXX ...]]`
-  - debug note -> `[[对应主笔记]]`
+处理流程：
+1. Glob `Debug-*.md`，确认最大编号
+2. 从 `远控系统Debug日志模版.md` 建新文件 `Debug-XXX xxx.md`
+3. 在主笔记中添加 `[[Debug-XXX ...]]` 入口（"如果这次还带了 bug" 章节）
+4. 在 Debug 日志中回链主笔记
+5. 更新 `Debug 经验汇总与方法论.md`
 
-### 7. Validate before finishing
+---
 
-Check all of the following:
+## 已有笔记索引
 
-- File name matches the numbered Chinese style already used nearby.
-- The note lives in the correct chapter folder.
-- Code references match real files and functions.
-- The note explains design intent, not only surface syntax.
-- Repeated concepts are linked, not copied.
-- Empty template sections were removed.
-- If the change fixed a bug, the corresponding `Debug-XXX` note and backlinks are present.
-- If the note uses SVG diagrams, the SVG files are stored in the vault's required asset directory, embedded back into the note correctly, and follow the nearby numbering convention.
-- If the vault has a required SVG background rule, confirm the exported files include that background rectangle.
+写新笔记前先查，已有的内容用 wiki-link 引用，不要重新展开：
 
-## Bug-Fix Handling
+| 笔记 | 已讲解的内容 |
+|------|-------------|
+| [[2.1 网络编程基本设计]] | Winsock 初始化、socket/bind/listen/accept |
+| [[2.2 网络编程架构设计]] | CServerSocket 单例模式、CHelper 自动释放 |
+| [[2.3 设计网络传输包协议]] | CPacket 完整实现、协议格式、粘包处理、校验和 |
+| [[2.4 获取磁盘分区信息]] | GetLogicalDriveStrings、命令处理框架 |
+| [[3.1 锁机处理]] | threadLockDlg、LockMachine、Win32 锁机 API |
+| [[4.1 文件下载功能的实现]] | 文件下载基础流程、分块传输、服务端发送逻辑 |
+| [[4.4 远程桌面显示功能设计与数据接收发送]] | 截图/显示链路、图像数据收发 |
+| [[6.1 初步完成控制层]] | CClientController 基本架构 |
+| [[6.5 重构网络模块（线程事件机制→消息机制）]] | 消息机制重构背景 |
+| [[6.7 消息机制闭环：窗口回调与上下文透传]] | WM_SEND_PACK_ACK 回调机制、lParam 上下文透传 |
+| [[6.11 远程显示链路收口：回调渲染、请求节流与失败清理]] | 截图链路收口、200ms 节流、PostThreadMessage 失败路径 |
+| [[6.12 文件树展示与下载缓冲区双 Bug 修复]] | LoadFileInfo 异步化、memmove 修正、下载完成检测 |
 
-Treat a change as a bug fix when either the commit message or the diff strongly suggests it:
+### Debug 日志目录
 
-- Keywords such as `fix`, `bug`, `debug`, `修复`, `崩溃`
-- Boundary changes such as `>` to `>=`
-- Type corrections such as `int` to `intptr_t`
-- Resource release additions such as `delete[]`, `CloseHandle`, `closesocket`
-- Null checks, lifetime fixes, thread-exit fixes, or UI state fixes
+| 路径 | 说明 |
+|------|------|
+| `0. Debug日志/` | 所有 Debug-XXX 日志（当前最新：Debug-023） |
+| `0. Debug日志/Debug 经验汇总与方法论.md` | 索引、分类统计、调试方法论 |
 
-When that happens:
+---
 
-1. Find the current max `Debug-XXX` note under `0. Debug日志`.
-2. Create the next numbered debug note from `D:\obsidian\C++\模版\远控系统Debug日志模版.md` if the issue is new.
-3. Record the symptom, root cause, wrong code, fixed code, and verification result.
-4. Update `Debug 经验汇总与方法论.md` when the issue adds a reusable failure pattern.
-5. Add double links between the main feature note and the debug note.
+## 质量检查清单
 
-## Writing Standard
+- [ ] 读过 git diff，精准定位变更范围
+- [ ] **主链路有 sequenceDiagram**（每篇主笔记必须有）
+- [ ] 旧/新机制对比有 flowchart 或对比表
+- [ ] 关键代码块都有讲解，没有裸代码
+- [ ] API 说明聚焦项目上下文，讲了"为什么选它"
+- [ ] Bug 修复内容已下沉到 Debug 日志
+- [ ] 主笔记与 Debug 日志有双向链接
+- [ ] Debug 经验汇总已更新
+- [ ] 已有笔记中讲过的概念用 wiki-link，没有重复展开
+- [ ] frontmatter 有 `tags: 项目/远控系统` 和 `git:` 字段
+- [ ] 空模板章节已删除
 
-Always explain these dimensions when they matter:
+---
 
-- Win32 API semantics such as window z-order, cursor clipping, handles, or message dispatch
-- MFC dialog or control lifecycle
-- Winsock socket lifecycle and packet flow
-- Thread ownership, blocking points, and cross-thread UI/message behavior
-- Data packet structure and command handling
+## Git 命令速查
 
-For notes aimed at learners, strengthen readability with:
+```bash
+cd "D:\c++\project\remote_ctl\remote_ctl1\remote_ctl\remote_ctl\RemoteCtrl"
 
-- Short lead paragraphs that state the conclusion before the deep dive
-- Comparison tables for old/new behavior, not just prose
-- SVG for static mechanism and comparison diagrams, Mermaid for timing and interaction order, and never ASCII when a real diagram would teach better
-- API mini-guides that explain not just what an API is, but why this project chose it over nearby alternatives
-- Parameter and return-value tables only for APIs that are central to understanding the change
-- Main notes that read like a walkthrough of one chain or one design decision, not like a changelog dump
-- Bug details split into separate bug notes when that makes the main note easier to read
-- Plain wording; avoid dense jargon unless it is immediately explained
-- Avoid fancy metaphors, storytelling flourishes, or language that makes the explanation feel theatrical
-
-## Language and Diagram Delivery
-
-Unless the user explicitly overrides it, follow this output rule:
-
-- First build the note in English.
-- Then translate and rewrite it into natural technical Chinese.
-- Treat the Chinese version as the final note by default.
-- Keep code, API names, class names, function names, packet names, and exact file paths in their source language where precision matters.
-
-Diagram rule of thumb:
-
-- Static block comparison, architecture layering, component grouping, old-vs-new snapshots: use SVG.
-- Request-response order, startup/shutdown timing, cross-thread callback order, and other sequence-heavy explanations: use Mermaid.
-- Translate chart labels too:
-  - Mermaid node text, edge labels, and note text should be Chinese in the final Chinese note.
-  - Visible SVG text should also be Chinese in the final Chinese note.
-
-Reject these failure modes:
-
-- Dumping code without explanation
-- Re-explaining `CPacket` or networking basics when a solid existing note already covers them
-- Creating loosely related `相关笔记` sections with no real dependency
-- Creating empty notes only to make links
-
-## Quick Reference
-
-Use these project facts directly:
-
-- Architecture: C/S, `RemoteCtrl` server plus `RemoteClient` client
-- Main technologies: MFC, Winsock, Win32 API
-- Core files:
-  - `ServerSocket.h`
-  - `ServerSocket.cpp`
-  - `RemoteCtrl.cpp`
-  - `RemoteClientDlg.cpp`
-
-Use this skill as a project-specific note-maintenance workflow, not as a generic markdown editor.
+git log --oneline -10
+git log -1 --stat
+git diff HEAD~1 HEAD -- "*.cpp" "*.h"
+git diff <commit1> <commit2> -- "*.cpp" "*.h"
+git show <commit> -- "*.cpp" "*.h"
+```
