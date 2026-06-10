@@ -1,0 +1,4 @@
+interface:
+  display_name: "Socratic Teaching Scaffolds"
+  short_description: "Guided discovery teaching scaffolds."
+  default_prompt: "Use $socratic-teaching-scaffolds to teach a topic through diagnostic questions, scaffolding, and transfer checks."

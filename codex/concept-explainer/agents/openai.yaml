@@ -1,0 +1,4 @@
+interface:
+  display_name: "Concept Explainer"
+  short_description: "Layered explanations with analogies."
+  default_prompt: "Use $concept-explainer to explain a concept with a summary, analogy, examples, misconceptions, and related ideas."

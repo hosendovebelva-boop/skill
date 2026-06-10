@@ -1,0 +1,56 @@
+{
+  "name": "Socratic Teaching Scaffolds Evaluator",
+  "description": "Self-check rubric for diagnostic quality, question ladder design, scaffolding, misconception correction, transfer validation, and learning continuity.",
+  "minimum_average_score": 3.5,
+  "criteria": [
+    {
+      "name": "Diagnostic depth",
+      "weight": 1.4,
+      "score_1": "No diagnostic questions; assumes learner knowledge.",
+      "score_3": "Asks 3-5 useful questions and identifies some gaps.",
+      "score_5": "Elicits the learner's mental model, evidence for misconceptions, prerequisites, and starting scaffolding level."
+    },
+    {
+      "name": "Question ladder quality",
+      "weight": 1.5,
+      "score_1": "Random questions or direct lecture.",
+      "score_3": "Basic simple-to-complex progression.",
+      "score_5": "Purposeful ladder from concrete foundation to pattern, formalization, edge cases, and transfer, with branches."
+    },
+    {
+      "name": "Scaffolding and fading",
+      "weight": 1.5,
+      "score_1": "No support or constant support.",
+      "score_3": "Appropriate starting support with some fading.",
+      "score_5": "Calibrates support per concept, fades after success, and increases support when struggle becomes frustration."
+    },
+    {
+      "name": "Misconception correction",
+      "weight": 1.4,
+      "score_1": "Corrects by assertion or ignores misconceptions.",
+      "score_3": "Uses prediction-observation-explanation with some follow-up.",
+      "score_5": "Uses contradiction, reconstruction, multiple examples, and delayed rechecks."
+    },
+    {
+      "name": "Transfer validation",
+      "weight": 1.3,
+      "score_1": "No novel application.",
+      "score_3": "Uses near transfer and learner explanation.",
+      "score_5": "Tests near, modified, far, or creative transfer and multi-level explanation."
+    },
+    {
+      "name": "Question authenticity",
+      "weight": 1.2,
+      "score_1": "Guessing game.",
+      "score_3": "Most questions are purposeful.",
+      "score_5": "Every question advances understanding, explores reasoning, or validates transfer."
+    },
+    {
+      "name": "Learning continuity",
+      "weight": 1.1,
+      "score_1": "No summary or next steps.",
+      "score_3": "General practice recommendations.",
+      "score_5": "Clear summary, remaining gaps, concrete practice tasks, spaced review, and mastery criteria."
+    }
+  ]
+}
