@@ -3,223 +3,274 @@ name: remote-ctrl-note
 description: |
   远控系统项目专用笔记管理 Skill。当用户需要以下操作时使用此 Skill：
   - 为远控项目写笔记、更新笔记
-  - 分析 git 提交并同步到笔记
-  - 记录 Bug 修复过程
-  触发词：远控笔记、远控系统笔记、更新远控笔记、远控项目、分析远控
+  - 同步项目代码变化到笔记
+  - 分析远控系统代码并生成文档
+  触发词：远控笔记、远控系统笔记、更新远控笔记、同步远控、远控项目、远控系统
 ---
 
-# Remote-Ctrl-Note — 远控系统项目笔记管理
+# Remote-Ctrl-Note - 远控系统项目笔记管理
+
+## 模版选择（重要！首先判断）
+
+写笔记前**必须先判断**应该使用哪个模版：
+
+| 判断条件 | 使用模版 | 模版路径 |
+|---------|---------|---------|
+| 记录某次 commit 的功能实现、架构重构、模块设计 | **远控系统模版笔记** | `模版/远控系统模版笔记.md` |
+| 记录运行时发现的 Bug 及其调试修复过程 | **远控系统Debug日志模版** | `模版/远控系统Debug日志模版.md` |
+
+### 详细判断逻辑
+
+**使用「远控系统模版笔记」的场景**：
+- 用户说"写笔记"、"记录这次提交"、"分析这段代码"
+- 内容是：新功能实现、架构演进、模块重构、代码讲解
+- 笔记存放于：`6.项目/远控系统/X. 章节目录/` 下
+- 命名格式：`X.X 功能名称.md`
+- 例：`6.4 网络模型线程完善(3).md`、`2.8 屏幕截屏与发送.md`
+
+**使用「远控系统Debug日志模版」的场景**：
+- 用户说"记录这个 Bug"、"写 Debug 日志"、"这个问题怎么解决的"
+- 内容是：Bug 现象 → 调试过程 → 根因分析 → 修复方案
+- 笔记存放于：`6.项目/远控系统/0. Debug日志/` 下
+- 命名格式：`Debug-XXX 问题简述.md`（编号从 Debug 经验汇总索引中查下一个可用编号）
+- 例：`Debug-013 显示命令与鼠标命令冲突导致程序卡死.md`
+- **写完后必须同步更新** `Debug 经验汇总与方法论.md` 的索引表和分类统计
+
+**一次 commit 可能同时产生两种笔记**：
+- 版本笔记记录"做了什么改动、为什么这样设计"
+- Debug 日志记录"遇到了什么 Bug、怎么排查的、怎么修的"
+- 两者通过 `[[wiki-link]]` 互相引用
+
+---
 
 ## 核心原则
 
-1. **先读 Git，再读代码**：通过 git diff 精准定位变更，不读无关文件
-2. **链路优先，代码其次**：先把请求→网络→响应→回调的完整链路讲顺，再进代码细节
-3. **Mermaid 优先 SVG**：多方交互用 `sequenceDiagram`，机制对比用 `flowchart`；只有局部结构补充才用 SVG 绘制
-4. **不重复已讲内容**：已有笔记中的概念用 `[[wiki-link]]` 引用，不展开
-5. **Bug 下沉**：主笔记只保留 Bug 结论和入口链接，详细过程进 Debug 日志
-6. **教学口吻**：直白好懂，带着读者走一遍，不故作高深，不用奇怪比喻
+1. **Git 驱动**：通过 git diff/log 精准定位新增代码，避免重复分析
+2. **代码必须详解**：关键代码必须有详细注释 + 设计思路讲解
+3. **技术栈讲清楚**：每个功能涉及的 Win32 API、MFC 机制都要解释
+4. **不重复已讲内容**：已讲解过的代码用 `[[wiki-link]]` 引用
+5. **新增代码功能**：分享新的类、新的函数有什么新的功能、函数间的调用关系
+
+---
+
+## 与 note-creator 的协作
+
+本 Skill **复用 `note-creator` 的核心规范**：
+
+| 复用内容 | 说明 |
+|---------|------|
+| 代码讲解规范 | 每段代码必须有配套讲解，禁止只堆砌代码 |
+| 笔记结构模板 | 设计背景 → 架构设计 → 核心实现 → 易错点 |
+| Modern C++ 风格 | 代码示例遵循现代 C++ 写作规范 |
+| 关联链接规范 | 合理使用 wiki-link，不过度链接 |
+
+**差异点**：
+- `note-creator`：创建通用 C++ 技术笔记
+- `remote-ctrl-note`：专注于远控项目，整合 git 变更、项目代码路径
 
 ---
 
 ## 项目信息
 
-| 项目 | 路径 |
+| 项目 | 说明 |
 |------|------|
-| 被控端 | `D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl\RemoteCtrl` |
-| 控制端 | `D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl\RemoteClient` |
-| 笔记根目录 | `D:\obsidian\C++\6.项目\远控系统` |
-| Debug 日志 | `D:\obsidian\C++\6.项目\远控系统\0. Debug日志` |
-| **主笔记模板** | `D:\obsidian\C++\模版\远控系统模版笔记.md` |
-| **Debug 模板** | `D:\obsidian\C++\模版\远控系统Debug日志模版.md` |
+| **项目路径** | `D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl` |
+| **笔记路径** | `D:\obsidian\C++\6.项目\远控系统\` |
+| **架构** | C/S 架构，被控端 (RemoteCtrl) + 控制端 (RemoteClient) |
+| **技术栈** | MFC, Winsock, Win32 API |
+
+### 项目结构
+
+```
+RemoteCtrl/
+├── RemoteCtrl/           # 被控端 (Server)
+│   ├── ServerSocket.h    # 网络核心：CServerSocket, CPacket
+│   ├── ServerSocket.cpp  # 网络实现
+│   ├── RemoteCtrl.cpp    # 主程序入口
+│   └── ...
+├── RemoteClient/         # 控制端 (Client)
+│   ├── RemoteClientDlg.h # MFC 对话框
+│   └── ...
+└── RemoteCtrl.sln        # VS 解决方案
+```
 
 ---
 
-## 执行流程
+## 执行流程（重要）
 
-### 第一步：读 Git 提交
+### 第一步：读取 Git 提交信息
+
+**必须先执行** Git 命令，了解用户最近做了什么修改：
 
 ```bash
+# 1. 查看最近提交记录
 cd "D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl"
 git log --oneline -10
+
+# 2. 查看最近一次提交的详细信息（文件变更统计）
 git log -1 --stat
+
+# 3. 查看具体代码变更（关键！）
 git diff HEAD~1 HEAD -- "*.cpp" "*.h"
-# 或指定 commit：
-git show <commit> -- "*.cpp" "*.h"
+# 或指定两个 commit：
+git diff <旧commit> <新commit> -- "*.cpp" "*.h"
 ```
 
-用 diff 判断：新功能 / 重构 / Bug 修复？哪些文件真正有变化？
+**Git 信息用途**：
+- 精准定位**新增代码**，只分析变化部分
+- 了解用户的**开发意图**（从 commit message）
+- **节省 token**，不用完整读取所有文件
 
-### 第二步：只读有变化的文件
+### 第二步：读取新增/修改的代码文件
 
-根据 diff 结果，只打开发生变化的函数和类。
+根据 git diff 结果，**只读取有变化的文件**：
+
+```bash
+# 示例：git diff 显示 RemoteCtrl.cpp 有变化
+Read RemoteCtrl/RemoteCtrl/RemoteCtrl.cpp
+```
 
 ### 第三步：检查已有笔记
 
-参考本文末的**已有笔记索引**，确认哪些内容已有笔记，避免重复。
+使用 Glob 搜索已有笔记，确定哪些代码已经讲解过：
 
-### 第四步：选模板，决定笔记类型
+```bash
+# 搜索远控系统笔记
+Glob "D:\obsidian\C++\6.项目\远控系统\**\*.md"
+```
 
-| 场景 | 模板 | 笔记位置 |
-|------|------|---------|
-| 新功能 / 架构 / 链路演进 / 重构 | `远控系统模版笔记.md` | 对应章节目录 |
-| Bug 修复为主 | `远控系统Debug日志模版.md` | `0. Debug日志/Debug-XXX xxx.md` |
-| 两者兼有 | 两个都建，互相链接 | 各自位置 |
+**决策逻辑**：
+| 情况 | 处理方式 |
+|------|---------|
+| 新代码/新功能 | 完整展示 + 详细注释讲解 |
+| 已讲解过的代码 | 用 `[[wiki-link]]` 引用之前笔记 |
+| 修改已有代码 | 说明修改点，对比新旧实现 |
 
-判断依据：
-- **主笔记**回答：功能怎么变了？链路现在怎么走？哪个类负责什么？
-- **Debug 日志**回答：怎么触发的？怎么排查的？根因是什么？怎么验证的？
+### 第四步：按模板生成笔记
 
-### 第五步：写笔记
+根据「模版选择」章节的判断结果，读取对应的 Obsidian 模版文件：
+- 版本笔记：`Read "D:\obsidian\C++\模版\远控系统模版笔记.md"`
+- Debug 日志：`Read "D:\obsidian\C++\模版\远控系统Debug日志模版.md"`
+
+按模版结构填充内容，删除不相关的章节（模版中有 HTML 注释说明）。
 
 ---
 
-## 主笔记写作规范
+## 代码讲解规范（核心！）
 
-基于 `远控系统模版笔记.md`，按以下顺序写，不相关的章节直接删掉：
+### 必须讲清楚的内容
 
-### 推荐教学顺序
+对于每个功能/函数，必须包含：
 
-```
-1. 先说这次改了什么        ← 表格，让读者建立全局印象
-2. 和上一版是什么关系      ← 对比表 + 旧/新机制 flowchart
-3. 先把主链路讲顺          ← sequenceDiagram，再配自然语言
-4. 核心实现                ← 小块代码 + 逐段讲解
-5. 如果这次还带了 bug      ← 只放结论和 [[Debug-XXX]] 入口
-6. 当前版本的准确结论      ← 做对了什么，还没收口什么
-7. Win32/Winsock/MFC 机制  ← 只讲本篇真正需要的 API
-8. 易错点与调试
-9. 代码索引
-```
+| 内容 | 说明 | 示例 |
+|------|------|------|
+| **技术栈** | 用到了什么 API/技术 | Win32 API: SetWindowPos, ClipCursor |
+| **设计思路** | 为什么这样设计 | 使用线程是为了不阻塞主线程 |
+| **关键点** | 代码中的关键行 | `wndTopMost` 使窗口永远置顶 |
+| **参数说明** | API 参数含义 | `SWP_NOSIZE | SWP_NOMOVE` 只改变 Z 序 |
+| **易错点** | 容易出错的地方 | ShowCursor 使用引用计数 |
 
-### 第 2 节：旧/新机制对比
+### 代码展示格式
 
-对比时用 SVG 画图，让读者一眼看懂：谁阻塞、谁不阻塞、响应归谁处理。
+**完整展示 + 详细注释**：
 
+```markdown
+### threadLockDlg 线程函数
 
-### 第 3 节：主链路时序图
+这是锁机功能的**核心实现**。设计思路：在独立线程中创建全屏窗口，避免阻塞主线程的网络通信。
 
-**每篇主笔记都应有链路时序图**。用 `sequenceDiagram`，节点名称对应项目真实的类/线程/函数名：
-
-```mermaid
-sequenceDiagram
-    participant UI as UI线程 / 调用方
-    participant Ctrl as CClientController
-    participant Net as 网络线程 (CClientSocket)
-    participant Server as 服务端 (RemoteCtrl)
-    participant Target as 目标窗口 / 回调方
-
-    UI->>Ctrl: 用户操作
-    Ctrl->>Net: PostThreadMessage(WM_SEND_PACK)
-    Net->>Server: send(CPacket)
-    Server-->>Net: recv(响应包)
-    Net->>Target: SendMessage(WM_SEND_PACK_ACK, CPacket*)
-    Target->>Target: OnSendPackAck → 更新UI/写文件
-```
-
-### 第 4 节：核心实现代码规范
-
-代码要拆成小块，每块都要有讲解，顺序从整体到细节：
+**技术栈**：
+- `_beginthreadex`：C 运行时库线程创建
+- `SetWindowPos`：设置窗口 Z 序（置顶）
+- `ClipCursor`：限制鼠标活动范围
+- `FindWindow`：根据类名查找窗口
+- `PostThreadMessage`：跨线程消息传递
 
 ```cpp
-void SomeFunction(...)
+unsigned __stdcall threadLockDlg(void* arg)
 {
-    // ===== 1. 这一步在链路中的作用 =====
-    // 先说"负责什么"，不要上来就掉进局部细节
+    // ===== 1. 创建并显示对话框 =====
+    // Create: 创建非模态对话框，不阻塞当前线程
+    dlg.Create(IDD_DIALOG_INFO, NULL);
+    dlg.ShowWindow(SW_SHOW);
 
-    // ===== 2. 关键处理步骤 =====
-    // 依赖了什么 API 或框架机制
+    // ===== 2. 设置全屏尺寸 =====
+    CRect rect;
+    rect.left = 0;
+    rect.top = 0;
+    // GetSystemMetrics: 获取系统度量值
+    // SM_CXFULLSCREEN: 全屏窗口客户区宽度（不含任务栏）
+    rect.right = GetSystemMetrics(SM_CXFULLSCREEN);
+    rect.bottom = GetSystemMetrics(SM_CYFULLSCREEN);
+    rect.bottom *= 1.05;  // 乘以 1.05 确保覆盖任务栏区域
+    dlg.MoveWindow(rect);
 
-    // ===== 3. 容易出错的细节 =====
-    // 涉及线程/消息/生命周期/协议边界时直接点出
+    // ===== 3. 窗口置顶 =====
+    // wndTopMost: 窗口置于所有非置顶窗口之上
+    // SWP_NOSIZE | SWP_NOMOVE: 不改变大小和位置，只改变 Z 序
+    dlg.SetWindowPos(&dlg.wndTopMost, 0, 0, 0, 0, SWP_NOSIZE | SWP_NOMOVE);
+
+    // ... 后续代码
 }
 ```
 
-每段代码后按顺序讲：
-1. **整体职责**：在链路中负责哪一段
-2. **输入和输出**：接收什么，结果交给谁
-3. **关键步骤**：按顺序做了几件事
-4. **API 说明**：用到了什么 Win32/MFC/Winsock API，为什么选它（而不是旁边那个）
-5. **风险点**：这里最容易出 Bug 的地方
+**关键点解析**：
+
+1. **线程函数签名**
+   - `unsigned __stdcall` 是 `_beginthreadex` 要求的调用约定
+   - 返回值 `unsigned`，参数 `void*`
+
+2. **全屏计算**
+   - `SM_CYFULLSCREEN` 不含任务栏高度，乘以 1.05 确保覆盖
+```
+
+### 禁止的做法
+
+```markdown
+❌ 错误：只贴代码，不讲解
+
+```cpp
+unsigned __stdcall threadLockDlg(void* arg)
+{
+    dlg.Create(IDD_DIALOG_INFO, NULL);
+    dlg.ShowWindow(SW_SHOW);
+    // ... 100 行代码
+}
+```
+
+❌ 错误：讲解太简略
+
+这个函数创建了一个对话框。
+```
 
 ---
 
-## Debug 日志写作规范
+## 引用格式
 
-基于 `远控系统Debug日志模版.md`，保留以下章节：
-
-```
-Bug 基本信息（表格：编号/严重度/分类/commit/触发条件）
-现象描述（操作步骤 + 可见症状）
-调试过程（按排查顺序，展示如何缩小范围）
-根因分析（问题代码 + 推理链）
-修复方案（修复代码 + 关键点说明）
-修复效果（修复前后对比，简单 Bug 可删）
-底层原理（可选，涉及值得深挖的机制时保留）
-调试经验（可复用的教训，加入 Debug 经验汇总）
-```
-
-**编号规则**：Glob `Debug-*.md`，取最大编号 +1。
+| 引用类型 | 格式 | 使用场景 |
+|---------|------|---------|
+| **笔记引用** | `[[笔记名#章节]]` | 引用已讲解过的概念/代码 |
+| **项目文件引用** | `> 📁 \`文件路径\` : 函数名 (行 XX-XX)` | 指向项目代码位置 |
+| **简短提示** | `> 📎 详见 [[笔记名]]` | 简短的交叉引用 |
 
 ---
 
-## 图表使用规范
+## 笔记模板
 
-### sequenceDiagram — 多方交互、请求/响应时序
+笔记模板已外置为 Obsidian 模版文件，写笔记时直接读取对应模版：
 
-适合：C/S 通信流程、跨线程消息传递、ACK 回调链路
+| 模版 | 路径 | 适用场景 |
+|------|------|---------|
+| **版本笔记模版** | `模版/远控系统模版笔记.md` | 功能实现、架构重构、模块设计 |
+| **Debug 日志模版** | `模版/远控系统Debug日志模版.md` | Bug 调试与修复记录 |
 
-```mermaid
-sequenceDiagram
-    participant A as 参与者A
-    participant B as 参与者B
-    A->>B: 同步调用（阻塞）
-    A-->>B: 异步/返回（虚线）
-    B->>B: 内部操作
-```
-
-### flowchart — 机制对比、线程流转、单条链路分支
-
-适合：旧/新机制对比、线程切换点、状态机分支
-
-```mermaid
-flowchart LR
-    A["发起请求"] --> B{"判断条件"}
-    B -- 成功 --> C["处理结果"]
-    B -- 失败 --> D["错误路径"]
-```
-
-### SVG — 仅用于局部结构补充
-
-适合：缓冲区内存布局、小范围调用链说明。**可以使用 SVG 代替整张机制图。**
-
-SVG 箭头默认使用小号空心样式：`markerWidth/markerHeight` 约 6-7，`path` 使用 `fill="none"` + `stroke`，不要使用大号实心三角箭头。
-
-
-## Bug 修复识别
-
-当 diff 中出现以下特征时，触发创建 Debug 日志：
-
-| 特征 | 示例 |
-|------|------|
-| commit message 含关键词 | `fix` / `bug` / `修复` / `崩溃` |
-| 边界条件修改 | `>` → `>=` |
-| 类型修正 | `int` → `intptr_t` |
-| 资源释放添加 | `delete[]` / `fclose` / `CloseHandle` |
-| 空指针/状态机修复 | 添加 `!= NULL` 判断、状态重置 |
-| memmove/memcpy 参数修正 | 参数顺序、长度计算修正 |
-
-处理流程：
-1. Glob `Debug-*.md`，确认最大编号
-2. 从 `远控系统Debug日志模版.md` 建新文件 `Debug-XXX xxx.md`
-3. 在主笔记中添加 `[[Debug-XXX ...]]` 入口（"如果这次还带了 bug" 章节）
-4. 在 Debug 日志中回链主笔记
-5. 更新 `Debug 经验汇总与方法论.md`
+使用方法：`Read "D:\obsidian\C++\模版\远控系统模版笔记.md"` 或 `Read "D:\obsidian\C++\模版\远控系统Debug日志模版.md"`，按模版结构填充内容，删除不相关的章节。
 
 ---
 
 ## 已有笔记索引
 
-写新笔记前先查，已有的内容用 wiki-link 引用，不要重新展开：
+写新笔记前，先检查这些已有笔记，避免重复讲解：
 
 | 笔记 | 已讲解的内容 |
 |------|-------------|
@@ -227,48 +278,87 @@ SVG 箭头默认使用小号空心样式：`markerWidth/markerHeight` 约 6-7，
 | [[2.2 网络编程架构设计]] | CServerSocket 单例模式、CHelper 自动释放 |
 | [[2.3 设计网络传输包协议]] | CPacket 完整实现、协议格式、粘包处理、校验和 |
 | [[2.4 获取磁盘分区信息]] | GetLogicalDriveStrings、命令处理框架 |
-| [[3.1 锁机处理]] | threadLockDlg、LockMachine、Win32 锁机 API |
-| [[4.1 文件下载功能的实现]] | 文件下载基础流程、分块传输、服务端发送逻辑 |
-| [[4.4 远程桌面显示功能设计与数据接收发送]] | 截图/显示链路、图像数据收发 |
-| [[6.1 初步完成控制层]] | CClientController 基本架构 |
-| [[6.5 重构网络模块（线程事件机制→消息机制）]] | 消息机制重构背景 |
-| [[6.7 消息机制闭环：窗口回调与上下文透传]] | WM_SEND_PACK_ACK 回调机制、lParam 上下文透传 |
-| [[6.11 远程显示链路收口：回调渲染、请求节流与失败清理]] | 截图链路收口、200ms 节流、PostThreadMessage 失败路径 |
-| [[6.12 文件树展示与下载缓冲区双 Bug 修复]] | LoadFileInfo 异步化、memmove 修正、下载完成检测 |
+| [[3.1 锁机处理]] | threadLockDlg、LockMachine、UnlockMachine、Win32 锁机 API |
 
-### Debug 日志目录
-
-| 路径 | 说明 |
-|------|------|
-| `0. Debug日志/` | 所有 Debug-XXX 日志（当前最新：Debug-023） |
-| `0. Debug日志/Debug 经验汇总与方法论.md` | 索引、分类统计、调试方法论 |
-
----
-
-## 质量检查清单
-
-- [ ] 读过 git diff，精准定位变更范围
-- [ ] **主链路有 sequenceDiagram**（每篇主笔记必须有）
-- [ ] 旧/新机制对比有 flowchart 或对比表
-- [ ] 关键代码块都有讲解，没有裸代码
-- [ ] API 说明聚焦项目上下文，讲了"为什么选它"
-- [ ] Bug 修复内容已下沉到 Debug 日志
-- [ ] 主笔记与 Debug 日志有双向链接
-- [ ] Debug 经验汇总已更新
-- [ ] 已有笔记中讲过的概念用 wiki-link，没有重复展开
-- [ ] frontmatter 有 `tags: 项目/远控系统` 和 `git:` 字段
-- [ ] 空模板章节已删除
+**使用方式**：如果新笔记需要用到 CPacket，不要重复贴代码，而是：
+```markdown
+数据包解析使用 [[2.3 设计网络传输包协议]] 中定义的 CPacket 类。
+```
 
 ---
 
 ## Git 命令速查
 
 ```bash
-cd "D:\c++\project\remote_ctl\remote_ctl1\remote_ctl\remote_ctl\RemoteCtrl"
+# 进入项目目录
+cd "D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl"
 
+# 查看最近提交
 git log --oneline -10
+
+# 查看最近提交的文件变更
 git log -1 --stat
+
+# 查看具体代码差异（最近一次提交）
 git diff HEAD~1 HEAD -- "*.cpp" "*.h"
+
+# 查看两个提交之间的差异
 git diff <commit1> <commit2> -- "*.cpp" "*.h"
+
+# 查看某次提交的完整内容
 git show <commit> -- "*.cpp" "*.h"
 ```
+
+---
+
+## 质量检查清单
+
+创建笔记前，确保：
+
+- [ ] **读取了 git diff**，了解本次代码变更
+- [ ] **精准定位新增代码**，不重复分析旧代码
+- [ ] **技术栈讲清楚**：涉及的 API、MFC 机制都有解释
+- [ ] **设计思路讲清楚**：为什么这样实现
+- [ ] **关键点都有注释**：代码中重要的行都有说明
+- [ ] **参数含义讲清楚**：API 参数不能一笔带过
+- [ ] **易错点有警示**：常见错误和正确做法
+- [ ] **合理使用引用**：已讲解内容用 wiki-link 引用
+- [ ] **代码索引准确**：文件路径和行号对应实际代码
+- [ ] **添加远控系统tags**：添加 项目/远控系统 的tags
+
+---
+
+## 注意事项
+
+1. **先读 Git，再读代码**：精准定位变化，节省 token
+2. **新代码必须详细讲解**：技术栈、设计思路、关键点缺一不可
+3. **不重复已讲解的代码**：用 `[[wiki-link]]` 引用
+4. **保持引用准确**：引用时确保笔记名和章节标题正确
+5. **代码要可运行**：展示的代码应该是项目中实际的代码
+6. **同步更新已有笔记索引**：新增笔记后更新本 Skill 的索引表
+7. **清晰的函数调用流程图**：在解释功能的时候体现函数的调用链和数据的传输链
+8. **图表使用规范**：
+   - **时序图（多方交互）**：使用 Mermaid `sequenceDiagram`，适合展示 C/S 通信、消息传递顺序
+   - **流程图/结构图（单一流程）**：使用 ASCII 图，适合展示函数调用链、目录结构、简单分支
+   - **复杂流程图/架构图**：使用 SVG 矢量图，放在 `D:\obsidian\C++\图片\` 目录下，笔记中使用相对路径引用：`![图名](../../图片/文件名.svg)`
+   - **SVG 箭头样式**：默认使用小号空心箭头，`markerWidth/markerHeight` 约 6-7，`path` 使用 `fill="none"` + `stroke`，不要使用大号实心三角箭头
+
+
+---
+
+## 快速参考
+
+### 项目路径
+- 被控端：`D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl\RemoteCtrl\`
+- 控制端：`D:\c++\project\remote_ctl\remote_ctl\RemoteCtrl\RemoteClient\`
+
+### 笔记路径
+- 笔记目录：`D:\obsidian\C++\6.项目\远控系统\`
+
+### 核心文件
+| 文件 | 内容 |
+|------|------|
+| ServerSocket.h | CServerSocket, CPacket 定义 |
+| ServerSocket.cpp | 网络实现 |
+| RemoteCtrl.cpp | 被控端主程序 |
+| RemoteClientDlg.cpp | 控制端 UI 逻辑 |
