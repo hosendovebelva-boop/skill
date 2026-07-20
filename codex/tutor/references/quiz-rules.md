@@ -1,79 +1,56 @@
 # Quiz Design Rules
 
-Read this before creating any quiz question.
+## Zero-Hint Policy (CRITICAL)
 
-## Zero-Hint Policy
+Every question must be answerable ONLY by someone who actually knows the material.
 
-Every question must be answerable only by someone who knows the material.
+1. **Option descriptions**: NEVER reveal correctness
+   - BAD: `label: "stderr"`, `description: "Error output stream used by Cloud Run for error classification"`
+   - GOOD: `label: "stderr"`, `description: "Standard error stream"`
 
-1. Do not reveal correctness in option labels or descriptions.
-2. Do not mark any option as recommended.
-3. Randomize correct answer positions.
-4. Ask about behavior, purpose, output, cause, or distinction without smuggling in the answer.
-5. Use plausible distractors from the same domain. Wrong answers should represent common misconceptions.
+2. **No "(Recommended)" tag** on any option
 
-Bad:
+3. **Randomize** correct answer position — never always first or last
 
-```text
-A. stderr - Error output stream used by this API for classification
-```
+4. **Question phrasing**: Ask about behavior/purpose/output, don't hint at the answer
+   - BAD: "Which error stream does error() use?"
+   - GOOD: "Where does error() method output go?"
 
-Good:
-
-```text
-A. stderr - Standard error stream
-```
-
-## Codex Interaction Rule
-
-Some Codex input tools force a recommended option or allow fewer than 4 choices. Do not use those tools for quiz questions. Present neutral numbered choices in normal chat and wait for the user's answer.
+5. **Plausible distractors**: Wrong options must be real concepts from the domain, representing common misconceptions
 
 ## Question Types
 
-- Factual recall: definitions, names, return values.
-- Conceptual understanding: why a pattern or rule exists.
-- Behavioral prediction: what happens when code or a system runs.
-- Comparison: distinguish similar concepts.
-- Debugging scenario: infer likely cause from symptoms.
+1. **Factual recall**: "What HTTP status code is returned when...?"
+2. **Conceptual understanding**: "Why does the system use X pattern?"
+3. **Behavioral prediction**: "What happens when X fails?"
+4. **Comparison/distinction**: "What is the difference between X and Y?"
+5. **Debugging scenario**: "Given this error, what is the most likely cause?"
 
-## Difficulty Balance
+## Difficulty Balancing
 
-- Diagnostic: 40% easy, 40% medium, 20% hard.
-- Weak-area drill: 30% medium, 70% hard.
-- Review: balanced across easy, medium, and hard.
+- Diagnostic: easy 40%, medium 40%, hard 20%
+- Weak-area drill: medium 30%, hard 70%
+- Review: all levels evenly
 
 ## Drilling Unresolved Concepts
 
-When targeting unresolved concepts from concept files:
+When targeting 🔴 concepts from concept files:
+- Do NOT repeat the exact same question — rephrase in a new context
+- Test the same underlying knowledge from a different angle
+- E.g., if user confused "400 vs 422", ask a scenario question where they must choose the correct status code for a new situation
 
-- Do not repeat the exact old question.
-- Test the same knowledge from a new angle.
-- Prefer scenario questions that reveal whether the misconception is gone.
+## AskUserQuestion Format
 
-## Round Format
-
-- 4 questions per round.
-- 4 options per question.
-- Single-select answers.
-- Neutral labels such as A, B, C, D.
-- Ask the user to reply in a compact format such as `1A 2C 3B 4D`.
+- 4 questions per round, 4 options each, single-select
+- Header: max 12 chars, "Q1. Topic"
 
 ## File Update Protocol
 
 After grading:
-
-1. Update `concepts/{area}.md` rows and error notes.
-2. Recalculate the dashboard from concept files.
-3. Use existing dashboard status labels if present. For new dashboards, use `Weak`, `Fair`, `Good`, `Mastered`, and `Unmeasured`.
-
-Suggested thresholds:
-
-- Weak: 0-39%
-- Fair: 40-69%
-- Good: 70-89%
-- Mastered: 90-100%
-- Unmeasured: no data
+1. Update `concepts/{area}.md` — add/update concept rows + error notes
+2. Update dashboard — recalculate area stats from concept files
+3. Badges: 🟥 0-39% · 🟨 40-69% · 🟩 70-89% · 🟦 90-100% · ⬜ no data
 
 ## Language Rule
 
-All output and newly created tracking content must use the user's detected language. Preserve existing file language and status labels when updating old files.
+All file content and output in the user's detected language. Badge emojis are universal.

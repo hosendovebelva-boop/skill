@@ -1,92 +1,135 @@
 ---
 name: tutor
-description: Run interactive StudyVault quiz tutoring for Obsidian-style learning: discover a StudyVault, diagnose knowledge, quiz specific sections, drill weak concepts, grade answers, and update concept tracking files. Use when the user wants a diagnostic assessment, study session, review, weak-area drill, progress check, "quiz me", "test me", "let's study", "/tutor", or equivalent Chinese study requests.
+description: >
+  Interactive quiz tutor for Obsidian StudyVault learning. Use when the user wants to:
+  (1) Take a diagnostic assessment of their knowledge,
+  (2) Study or review specific sections/topics,
+  (3) Drill weak areas identified in previous sessions,
+  (4) Check their learning progress or dashboard,
+  or says things like "quiz me", "test me", "let's study", "/tutor", "학습", "퀴즈", "평가".
 ---
 
-# Tutor
+# Tutor Skill
 
-Use this skill as a quiz tutor that tracks knowledge at the concept level. The goal is to expose blind spots, explain mistakes, and keep a compact dashboard current.
+Quiz-based tutor that tracks what the user knows and doesn't know at the **concept level**. The goal is helping users discover their blind spots through questions.
 
-## Required Behavior
+## File Structure
 
-- Detect the user's language and use it for all user-facing output and newly created file content.
-- Preserve existing StudyVault paths, filenames, language, and dashboard conventions when found.
-- Ask before choosing a session type. In Codex, present concise numbered choices in normal chat and wait for the user; do not use tools that force recommended choices for quiz options.
-- Read [references/quiz-rules.md](references/quiz-rules.md) before writing any quiz question.
-- Ask exactly 4 multiple-choice questions per round, with 4 plausible options each.
-- Never include hints in option labels or descriptions.
-- After grading, update both the relevant concept file(s) and the dashboard.
+```
+StudyVault/
+├── *dashboard*              ← Compact overview: proficiency table + stats
+└── concepts/
+    ├── {area-name}.md       ← Per-area concept tracking (attempts, status, error notes)
+    └── ...
+```
+
+- **Dashboard**: Only aggregated numbers. Links to concept files. Stays small forever.
+- **Concept files**: One per area. Tracks each concept with attempts, correct count, date, status, and error notes. Grows proportionally to unique concepts tested (bounded).
 
 ## Workflow
 
 ### Phase 0: Detect Language
 
-Infer the language from the user's latest message. If mixed, prefer the language the user used for the request.
+Detect user's language from their message → `{LANG}`. All output and file content in `{LANG}`.
 
-### Phase 1: Discover StudyVault
+### Phase 1: Discover Vault
 
-1. Search the current project or vault for `StudyVault/`.
-2. List available section directories or markdown sections.
-3. Search for a compact dashboard file such as `*dashboard*`.
-4. If a dashboard exists, read it and preserve its path.
-5. If StudyVault exists but no dashboard exists, create one from the template below.
-6. If no StudyVault exists, report that and stop. Ask for the vault path only if discovery cannot find it.
+1. Glob `**/StudyVault/` in project
+2. List section directories
+3. Glob `**/StudyVault/*dashboard*` to find dashboard
+4. If found, read it. Preserve existing file path regardless of language.
+5. If not found, create from template (see Dashboard Template below)
+
+If no StudyVault exists, inform user and stop.
 
 ### Phase 2: Ask Session Type
 
-Analyze the dashboard and offer context-aware choices:
+**MANDATORY**: Use AskUserQuestion to let the user choose what to do. Analyze the dashboard to build context-aware options, then present them.
 
-- Diagnostic: for unmeasured areas.
-- Drill weak areas: for areas with low accuracy or unresolved concepts.
-- Choose a section: always include this.
-- Hard-mode review: include when all measured areas are strong.
+Read the dashboard proficiency table and build options based on current state:
 
-Wait for the user's choice before reading source notes and building questions.
+1. If unmeasured areas (⬜) exist → include "Diagnostic" option targeting those areas
+2. If weak areas (🟥/🟨) exist → include "Drill weak areas" option naming the weakest area(s)
+3. Always include "Choose a section" option so the user can pick any area
+4. If all areas are 🟩/🟦 → include "Hard-mode review" option
+
+Present these as an AskUserQuestion with header "Session" and concise descriptions showing which areas each option targets. The user MUST select before proceeding.
 
 ### Phase 3: Build Questions
 
-1. Read the markdown notes in the selected section(s).
-2. For weak-area drills, also read `concepts/{area}.md` and target unresolved or low-confidence concepts.
-3. Read [references/quiz-rules.md](references/quiz-rules.md).
-4. Create exactly 4 questions using the zero-hint rules.
+1. Read markdown files in target section(s)
+2. If drilling weak area: also read `concepts/{area}.md` to find 🔴 unresolved concepts — rephrase these in new contexts (don't repeat the same question)
+3. Craft exactly 4 questions following `references/quiz-rules.md`
+
+**CRITICAL**: Read `references/quiz-rules.md` before crafting ANY question. Zero hints allowed.
 
 ### Phase 4: Present Quiz
 
-Present all 4 questions in one message unless the user asks for one-at-a-time mode. Use neutral numbered options. Ask the user to reply with answers such as `1A 2C 3B 4D`.
+Use AskUserQuestion:
+- 4 questions, 4 options each, single-select
+- Header: "Q1. Topic" (max 12 chars)
+- Descriptions: neutral, no hints
 
-### Phase 5: Grade And Explain
+### Phase 5: Grade & Explain
 
-Show a compact results table with question, correct answer, user answer, and result. For wrong answers, explain the misconception and the correct model briefly. Map every question to its area and concept.
+1. Show results table (question / correct answer / user answer / result)
+2. Wrong answers: concise explanation
+3. Map each question to its area
 
-### Phase 6: Update Tracking Files
+### Phase 6: Update Files
 
-Update `concepts/{area}.md`:
+#### 1. Update concept file (`concepts/{area}.md`)
 
-- New concept: add a row; if wrong, add an error note.
-- Existing unresolved concept answered correctly: increment attempts and correct count; mark resolved.
-- Existing resolved concept answered wrong: increment attempts; mark unresolved again; update the error note.
+For each question answered:
+- **New concept**: Add row to table + if wrong, add error note under `### 오답 메모` (or localized equivalent)
+- **Existing 🔴 concept answered correctly**: Increment attempts & correct, change status to 🟢, keep error note (learning history)
+- **Existing 🟢 concept answered wrong again**: Increment attempts, change status back to 🔴, update error note
 
-Update the dashboard by recalculating from concept files:
+Table format:
+```markdown
+| Concept | Attempts | Correct | Last Tested | Status |
+|---------|----------|---------|-------------|--------|
+| concept name | 2 | 1 | 2026-02-24 | 🔴 |
+```
 
-- Per-area correct, wrong, rate, and level.
-- Total questions and cumulative rate.
-- Unresolved and resolved concept counts.
-- Weakest and strongest areas.
+Error notes format (only for wrong answers):
+```markdown
+### Error Notes
 
-Keep the dashboard compact. Store per-concept details only in concept files.
+**concept name**
+- Confusion: what the user mixed up
+- Key point: the correct understanding
+```
+
+#### 2. Update dashboard
+
+- Recalculate per-area stats from concept files (sum attempts/correct across all concepts in that area)
+- Update proficiency badges: 🟥 0-39% · 🟨 40-69% · 🟩 70-89% · 🟦 90-100% · ⬜ no data
+- Update stats: total questions, cumulative rate, unresolved/resolved counts, weakest/strongest
+
+Dashboard stays compact — no session logs, no per-question details.
 
 ## Dashboard Template
+
+Create when no dashboard exists. Filename localized to `{LANG}`. Example in English:
 
 ```markdown
 # Learning Dashboard
 
 > Concept-based metacognition tracking. See linked files for details.
 
+---
+
 ## Proficiency by Area
 
 | Area | Correct | Wrong | Rate | Level | Details |
-| --- | ---: | ---: | ---: | --- | --- |
-| **Total** | **0** | **0** | **-** | Unmeasured | |
+|------|---------|-------|------|-------|---------|
+(one row per section, last column = [[concepts/{area}]] link)
+| **Total** | **0** | **0** | **-** | ⬜ Unmeasured | |
+
+> 🟥 Weak (0-39%) · 🟨 Fair (40-69%) · 🟩 Good (70-89%) · 🟦 Mastered (90-100%) · ⬜ Unmeasured
+
+---
 
 ## Stats
 
@@ -100,13 +143,24 @@ Keep the dashboard compact. Store per-concept details only in concept files.
 
 ## Concept File Template
 
+Create per area when first question is asked. Example:
+
 ```markdown
-# {Area Name} - Concept Tracker
+# {Area Name} — Concept Tracker
 
 | Concept | Attempts | Correct | Last Tested | Status |
-| --- | ---: | ---: | --- | --- |
+|---------|----------|---------|-------------|--------|
 
-## Error Notes
+### Error Notes
 
-(Add notes only for missed concepts.)
+(added as concepts are missed)
 ```
+
+## Important Reminders
+
+- ALWAYS read `references/quiz-rules.md` before creating questions
+- NEVER include hints in option labels or descriptions
+- NEVER use "(Recommended)" on any option
+- Randomize correct answer position
+- After grading, ALWAYS update both concept file AND dashboard
+- Communicate in user's language

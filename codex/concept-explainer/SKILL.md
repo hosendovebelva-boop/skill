@@ -1,71 +1,147 @@
 ---
 name: concept-explainer
-description: Explain difficult or unfamiliar concepts with adjustable depth, ELI5-style simplification, analogies, examples, misconceptions, and related concepts. Use when the user asks to explain, simplify, define, compare, clarify, "what is", "how does", "why does", "ELI5", "analogy for", or equivalent Chinese learning requests.
+description: ELI5-style explanations with analogies and multiple examples. Explains concepts at different levels (ELI5, high school, undergraduate, graduate). Uses real-world analogies and visual metaphors. Use when explaining difficult concepts, clarifying confusing topics, or learning new subjects. Triggers - explain concept, ELI5, explain like I'm 5, what is, how does, why does, analogy for, simple explanation.
 ---
 
 # Concept Explainer
 
-Use this skill to make a concept feel understandable without flattening it into a misleading simplification.
+Clear explanations with analogies and examples at multiple difficulty levels.
 
-## Quick Workflow
+## Explanation Levels
 
-1. Infer the learner level from the request. If the level is unclear, start at a practical beginner or high-school level and offer to go deeper.
-2. Give a one-sentence definition before details.
-3. Build one strong analogy or visual model.
-4. Explain how it actually works with accurate terminology.
-5. Add 2-3 examples at increasing difficulty.
-6. Name common misconceptions and correct them.
-7. Connect the concept to nearby ideas when useful.
+| Level | Audience | Style |
+|-------|----------|-------|
+| ELI5 | Complete beginner | Simple words, everyday analogies |
+| High School | Some background | Basic terminology, clear examples |
+| Undergraduate | Foundational knowledge | Technical terms, detailed mechanisms |
+| Graduate | Advanced understanding | Nuances, edge cases, research context |
 
-For a small question, use only the needed subset. For a study request, use the full structure.
+---
 
-## Depth Levels
+## Explanation Framework
 
-| Level | Use For | Style |
-| --- | --- | --- |
-| ELI5 | Complete beginner | Everyday words, one core analogy, no jargon |
-| High school | Some background | Basic terms, concrete examples, clear cause and effect |
-| Undergraduate | Foundational knowledge | Technical vocabulary, mechanisms, formulas when useful |
-| Graduate | Advanced learner | Assumptions, edge cases, limitations, research context |
+```mermaid
+flowchart TB
+    A[Concept] --> B[One-Sentence Summary]
+    B --> C[Core Analogy]
+    C --> D[How It Works]
+    D --> E[Examples]
+    E --> F[Common Misconceptions]
+```
 
-## Explanation Template
+---
+
+## Template: Standard Explanation
 
 ```markdown
+# [Concept Name]
+
 ## In One Sentence
-[Concept] is [simple definition] that [what it does or why it matters].
+[Concept] is [simple definition] that [what it does/why it matters].
 
-## Intuition
-Think of it like [familiar thing]. Just as [familiar thing does X], [concept] does Y.
+## The Analogy
+Think of [concept] like [familiar thing]. Just as [familiar thing does X], [concept] does [Y].
 
-## How It Works
-[Accurate explanation with the right terms, introduced gently.]
+## How It Actually Works
+[More detailed explanation with proper terminology]
+
+### Key Components
+1. **Component 1:** What it is and what it does
+2. **Component 2:** What it is and what it does
+3. **Component 3:** How they work together
 
 ## Examples
-1. Simple: [everyday or toy example]
-2. Applied: [real use case]
-3. Deeper: [edge case or more technical case]
+
+### Example 1: [Simple]
+[Everyday example with the concept]
+
+### Example 2: [Applied]
+[Real-world application]
+
+### Example 3: [Advanced]
+[Complex scenario]
 
 ## Common Misconceptions
-- Myth: [wrong belief]
-  Reality: [correct model]
+- ❌ **Myth:** [Wrong belief]
+  - ✅ **Reality:** [Correct understanding]
 
 ## Related Concepts
-- [Concept A]: [relationship]
+- [Concept A] - [How it relates]
+- [Concept B] - [How it relates]
 ```
+
+---
 
 ## Analogy Patterns
 
-- Structure analogy: Map components of the concept to parts of a familiar object.
-- Process analogy: Map the steps of the concept to a familiar process.
-- Scale analogy: Use size, time, or quantity comparisons when raw numbers are hard to feel.
-- Contrast analogy: Explain what the concept is not, especially when two ideas are often confused.
+### Structure Analogy
+"[Concept] is like a [familiar object] where [component A] is like [part 1] and [component B] is like [part 2]."
 
-Never let an analogy quietly become the explanation. State where the analogy breaks.
+**Example:** "A cell is like a factory where the nucleus is the control room and mitochondria are the power plants."
 
-## Quality Checks
+### Process Analogy
+"[Concept] works like [familiar process]. First, [step 1 comparison], then [step 2 comparison]."
 
-- Start simple, then add precision.
-- Define each new technical term the first time it appears.
-- Use examples that test the core idea, not decorative examples.
-- Address at least one likely misconception for non-trivial concepts.
-- Prefer clarity over breadth; do not introduce adjacent topics unless they reduce confusion.
+**Example:** "Osmosis works like crowds at a concert. People naturally spread from crowded areas to less crowded areas."
+
+### Scale Analogy
+"If [large/small thing] were the size of [familiar object], then [other element] would be..."
+
+**Example:** "If an atom were the size of a football stadium, the nucleus would be a marble at the center."
+
+---
+
+## Level Adjustments
+
+### ELI5 Techniques
+- No jargon
+- 1-2 sentence explanations
+- Everyday objects as analogies
+- "Imagine if..." scenarios
+- Avoid numbers unless simple
+
+### High School Level
+- Introduce key terms with definitions
+- Simple diagrams
+- Concrete examples
+- Cause and effect clear
+
+### Undergraduate Level
+- Technical vocabulary expected
+- Mathematical relationships
+- Mechanism details
+- Multiple interconnected concepts
+
+### Graduate Level
+- Assumptions and limitations
+- Historical development
+- Current research questions
+- Edge cases and exceptions
+
+---
+
+## Example: Explaining "Entropy" at Multiple Levels
+
+### ELI5
+"Entropy is messiness. Your room wants to get messy by itself, but you have to work to clean it up."
+
+### High School
+"Entropy measures disorder in a system. In nature, things tend to become more disordered over time - ice melts, buildings crumble, things mix together."
+
+### Undergraduate
+"Entropy (S) is a thermodynamic quantity measuring the number of microscopic configurations (microstates) available to a system. ΔS = Q/T for reversible processes. The Second Law states entropy of an isolated system never decreases."
+
+### Graduate
+"Entropy connects to information theory through Boltzmann's equation S = k ln Ω. Maximum entropy methods provide principled uncertainty quantification. Non-equilibrium thermodynamics extends these concepts to systems with entropy production."
+
+---
+
+## Quality Checklist
+
+- [ ] Opens with simple one-liner
+- [ ] Includes relatable analogy
+- [ ] Provides 2-3 examples at different scales
+- [ ] Addresses common misconceptions
+- [ ] Builds from simple to complex
+- [ ] Uses consistent terminology
+- [ ] Connects to related concepts
