@@ -26,7 +26,7 @@ description: |
 使用辅助脚本快速获取笔记的结构信息和质量指标：
 
 ```bash
-python .claude/skills/note-extender/scripts/analyze.py "笔记路径.md"
+python3 ~/.claude/skills/note-extender/scripts/analyze.py "笔记路径.md"
 ```
 
 此脚本会输出：
