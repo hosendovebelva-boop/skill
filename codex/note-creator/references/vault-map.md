@@ -67,7 +67,7 @@ Vault 根：`~/Documents/C++/obsidian_notes-main`
 
 > AI Infra 的资料分两层：教材负责解释相对稳定的原理；项目、厂商和标准组织的官方文档负责确认当前接口、版本边界和硬件限制。写笔记时两者要分开引用，不能用教材的旧描述替代最新规范。
 
-#### 核心英文教材
+#### 核心教材（以本地可用版本为准）
 
 | 书 | 适合解决的问题 | 官方资料 | 本地资源（以磁盘实际文件为准） |
 |---|---|---|---|
@@ -81,9 +81,10 @@ Vault 根：`~/Documents/C++/obsidian_notes-main`
 | *TCP/IP Illustrated, Volume 3* — Stevens | T/TCP、HTTP、NNTP、UNIX 域协议；适合作为协议演进与实现史参考 | [InformIT](https://www.informit.com/store/tcp-ip-illustrated-volume-3-tcp-for-transactions-http-9780134457109) | `图片/书籍/TCPIP Illustrated, Volume 3*.pdf` |
 | *UNIX Network Programming, Volume 1*, 3rd ed. — Stevens et al. | POSIX socket、阻塞/非阻塞 I/O、并发服务器 | [InformIT](https://www.informit.com/store/unix-network-programming-volume-1-the-sockets-networking-9780131411555) | `图片/书籍/UNIX Network Programming, Volume 1*.pdf` |
 | *High Performance Computing: Modern Systems and Practices*, 2nd ed. | 集群、并行计算、GPU 加速、性能监控、存储与文件系统 | [Elsevier](https://shop.elsevier.com/books/high-performance-computing/sterling/978-0-12-823035-0) | 本地暂未发现 |
-| *Data Storage Architectures and Technologies* — Jiwu Shu | 存储设备、RAID、文件系统、网络存储、分布式存储、可靠性 | [Springer](https://link.springer.com/book/10.1007/978-981-97-3534-1) | 本地暂未发现 |
-| *Inside Solid State Drives*, 2nd ed. | NAND、FTL、GC、写放大、ECC、PCIe/NVMe | [Springer](https://link.springer.com/book/10.1007/978-981-13-0599-3) | 本地暂未发现 |
-| *Designing Data-Intensive Applications* — Martin Kleppmann | 一致性、复制、分区、故障、数据系统架构 | [作者官网](https://martin.kleppmann.com/2017/03/27/designing-data-intensive-applications.html) | 本地暂未发现 |
+| 《数据存储架构与技术（第2版）》— 舒继武 | 存储设备、RAID、文件系统、网络存储、分布式存储、一致性、可靠性与数据保护 | — | `图片/书籍/数据存储架构与技术 (第2版)*.epub` |
+| 《深入浅出SSD：固态存储核心技术、原理与实战》 | NAND、FTL、垃圾回收、写放大、ECC、PCIe/NVMe、SSD 测试与电源管理 | — | `图片/书籍/深入浅出SSD*.epub` |
+
+> 本地没有发现 *Designing Data-Intensive Applications* 的中文直译版；《数据存储架构与技术（第2版）》覆盖分布式存储、一致性、可靠性等相近主题，作为中文对应教材使用，但不要把它描述成 DDIA 的翻译本。
 
 #### 高性能网络与存储的活文档
 
