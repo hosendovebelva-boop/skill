@@ -3,6 +3,8 @@
 Vault 根：`~/Documents/C++/obsidian_notes-main`
 
 > 下面的目录表是 2026-07-26 从磁盘实测的快照。目录会变，**用之前先 `ls` 核对**。
+>
+> 书籍资源路径已于 2026-08-30 根据 `图片/书籍/` 的实际文件复核；其他目录和文件名仍可能变化，使用前以磁盘为准。
 
 ---
 
@@ -54,37 +56,36 @@ Vault 根：`~/Documents/C++/obsidian_notes-main`
 
 | 书 | 覆盖 | 本地资源（以磁盘实际文件为准） |
 |---|---|---|
-| 《C++ Primer》 | 系统学习现代 C++ 语言、标准库与惯用写法 | `图片/书籍/C++ Primer (Stanley*.pdf` |
-| 《C++ Primer Plus》 | 入门补充、语法和基础编程练习 | `图片/书籍/C++ Primer Plus*.pdf` |
+| 《C++ Primer》 | 系统学习现代 C++ 语言、标准库与惯用写法 | `图片/书籍/C++ Primer (Stanley B. Lippman, Josée... (Z-Library).pdf` |
+| 《C++ Primer Plus》 | 入门补充、语法和基础编程练习 | `图片/书籍/C++ Primer Plus (Stephen Prata) (Z-Library).pdf` |
 | 《Effective C++》 | 经典 C++、OOP、资源管理 | `图片/书籍/Effective C++.pdf` |
 | 《Effective Modern C++》 | C++11/14、智能指针、移动语义、并发 | `图片/书籍/Effective Modern C++.pdf` |
-| 《Effective STL》 | 容器、算法、迭代器 | 本地暂未发现 |
-| 《Linux 多线程服务端编程》 | 网络编程、并发、Reactor | 本地暂未发现 |
-| 《CSAPP》 | 底层原理、内存、链接 | 本地暂未发现 |
+| 《Effective STL》 | 容器、算法、迭代器 | `图片/书籍/Effective STL 50 Specific Ways to Improve Your Use of Standard Template Library (Scott Meyers) (z-library.sk, 1lib.sk, z-lib.sk).pdf` |
+| 《Linux 多线程服务端编程》 | 网络编程、并发、Reactor | `图片/书籍/Linux多线程服务端编程 (陈硕) (z-library.sk, 1lib.sk, z-lib.sk).pdf` |
+| 《CSAPP》 | 底层原理、内存、链接 | `图片/书籍/Computer Systems A Programmers Perspective (Randal E. Bryant, David R. OHallaron) (z-library.sk, 1lib.sk, z-lib.sk).pdf` |
 | 《Modern Operating Systems》 | 进程、线程、内存、文件系统、I/O 与操作系统设计 | `图片/书籍/Modern Operating Systems.pdf` |
 
 ### 高性能系统 / AI Infra
 
 > AI Infra 的资料分两层：教材负责解释相对稳定的原理；项目、厂商和标准组织的官方文档负责确认当前接口、版本边界和硬件限制。写笔记时两者要分开引用，不能用教材的旧描述替代最新规范。
 
-#### 核心教材（以本地可用版本为准）
+#### 核心英文教材
 
 | 书 | 适合解决的问题 | 官方资料 | 本地资源（以磁盘实际文件为准） |
 |---|---|---|---|
-| *Systems Performance: Enterprise and the Cloud*, 2nd ed. — Brendan Gregg | CPU、内存、文件系统、磁盘、网络、性能方法论、`perf`/BPF/Benchmark | [作者官网](https://www.brendangregg.com/systems-performance-2nd-edition-book.html) | `图片/书籍/Systems Performance*.pdf` |
-| *Computer Architecture: A Quantitative Approach*, 6th ed. — Hennessy & Patterson | Cache、内存层次、NUMA、PCIe、加速器、仓库级计算 | [Elsevier](https://www.educate.elsevier.com/book/details/9780128119051) | `图片/书籍/Computer Architecture A Quantitative Approach*.pdf` |
-| *The Linux Programming Interface* — Michael Kerrisk | Linux I/O、`mmap`、进程、线程、`epoll`、系统调用语义 | [作者官网](https://michaelkerrisk.com/tlpi/index.html) | `图片/书籍/The Linux programming interface*.pdf` |
-| *Computer Networking: A Top-Down Approach*, 9th ed. — Kurose & Ross | 网络基础、传输层、HTTP/3、QUIC、5G | [Pearson](https://www.pearson.com/en-us/subject-catalog/p/computer-networking-a-top-down-approach/P200000013385) | `图片/书籍/Computer Networking A Top-Down Approach.pdf`（本地文件为旧版） |
-| *Computer Networks*, 6th ed. — Tanenbaum, Feamster & Wetherall | 从硬件、链路层到应用层的完整网络体系 | [Pearson](https://www.pearson.com/en-us/subject-catalog/p/computer-networks/P200000003188/9780137523214) | `图片/书籍/Computer Networks, Global Edition*.pdf` |
-| *TCP/IP Illustrated, Volume 1: The Protocols*, 2nd ed. — Stevens & Fall | TCP/IP 协议行为、抓包分析、重传、拥塞控制 | [Pearson](https://www.pearson.com/en-us/subject-catalog/p/tcp-ip-illustrated-volume-1-the-protocols/P200000000242) | `图片/书籍/TCPIP Illustrated Vol. 1*.pdf` |
-| *TCP/IP Illustrated, Volume 2: The Implementation* — Stevens & Wright | 4.4BSD-Lite TCP/IP 协议栈实现、socket 层、内核数据结构与源码 | [InformIT](https://www.informit.com/store/tcp-ip-illustrated-volume-2-paperback-the-implementation-9780134760131) | `图片/书籍/TCPIP illustrated. Volume 2*.pdf` |
-| *TCP/IP Illustrated, Volume 3* — Stevens | T/TCP、HTTP、NNTP、UNIX 域协议；适合作为协议演进与实现史参考 | [InformIT](https://www.informit.com/store/tcp-ip-illustrated-volume-3-tcp-for-transactions-http-9780134457109) | `图片/书籍/TCPIP Illustrated, Volume 3*.pdf` |
-| *UNIX Network Programming, Volume 1*, 3rd ed. — Stevens et al. | POSIX socket、阻塞/非阻塞 I/O、并发服务器 | [InformIT](https://www.informit.com/store/unix-network-programming-volume-1-the-sockets-networking-9780131411555) | `图片/书籍/UNIX Network Programming, Volume 1*.pdf` |
-| *High Performance Computing: Modern Systems and Practices*, 2nd ed. | 集群、并行计算、GPU 加速、性能监控、存储与文件系统 | [Elsevier](https://shop.elsevier.com/books/high-performance-computing/sterling/978-0-12-823035-0) | 本地暂未发现 |
-| 《数据存储架构与技术（第2版）》— 舒继武 | 存储设备、RAID、文件系统、网络存储、分布式存储、一致性、可靠性与数据保护 | — | `图片/书籍/数据存储架构与技术 (第2版)*.epub` |
-| 《深入浅出SSD：固态存储核心技术、原理与实战》 | NAND、FTL、垃圾回收、写放大、ECC、PCIe/NVMe、SSD 测试与电源管理 | — | `图片/书籍/深入浅出SSD*.epub` |
-
-> 本地没有发现 *Designing Data-Intensive Applications* 的中文直译版；《数据存储架构与技术（第2版）》覆盖分布式存储、一致性、可靠性等相近主题，作为中文对应教材使用，但不要把它描述成 DDIA 的翻译本。
+| *Systems Performance: Enterprise and the Cloud*, 2nd ed. — Brendan Gregg | CPU、内存、文件系统、磁盘、网络、性能方法论、`perf`/BPF/Benchmark | [作者官网](https://www.brendangregg.com/systems-performance-2nd-edition-book.html) | `图片/书籍/Systems Performance (Brendan Gregg) (z-library.sk, 1lib.sk, z-lib.sk).pdf` |
+| *Computer Architecture: A Quantitative Approach*, 6th ed. — Hennessy & Patterson | Cache、内存层次、NUMA、PCIe、加速器、仓库级计算 | [Elsevier](https://www.educate.elsevier.com/book/details/9780128119051) | `图片/书籍/Computer Architecture A Quantitative Approach 6th Edition (John L. Hennessy  David A. Patterson) (z-library.sk, 1lib.sk, z-lib.sk).pdf` |
+| *The Linux Programming Interface* — Michael Kerrisk | Linux I/O、`mmap`、进程、线程、`epoll`、系统调用语义 | [作者官网](https://michaelkerrisk.com/tlpi/index.html) | `图片/书籍/The Linux programming interface a Linux and UNIX system programming handbook (Michael Kerrisk) (z-library.sk, 1lib.sk, z-lib.sk).pdf` |
+| *Computer Networking: A Top-Down Approach*, 9th ed. — Kurose & Ross | 网络基础、传输层、HTTP/3、QUIC、5G | [Pearson](https://www.pearson.com/en-us/subject-catalog/p/computer-networking-a-top-down-approach/P200000013385) | `图片/书籍/Computer Networking A Top-Down Approach, 9th Edition (James Kurose, Keith Ross) (z-library.sk, 1lib.sk, z-lib.sk).pdf`；另有旧版 `图片/书籍/Computer Networking A Top-Down Approach.pdf` |
+| *Computer Networks*, 6th ed. — Tanenbaum, Feamster & Wetherall | 从硬件、链路层到应用层的完整网络体系 | [Pearson](https://www.pearson.com/en-us/subject-catalog/p/computer-networks/P200000003188/9780137523214) | `图片/书籍/Computer Networks, Global Edition (Andrew S. Tanenbaum, Nick Feamster etc.) (z-library.sk, 1lib.sk, z-lib.sk).pdf` |
+| *TCP/IP Illustrated, Volume 1: The Protocols*, 2nd ed. — Stevens & Fall | TCP/IP 协议行为、抓包分析、重传、拥塞控制 | [Pearson](https://www.pearson.com/en-us/subject-catalog/p/tcp-ip-illustrated-volume-1-the-protocols/P200000000242) | `图片/书籍/TCPIP Illustrated Vol. 1 (2nd Ed) (Kevin R. Fall, W. Richard Stevens) (z-library.sk, 1lib.sk, z-lib.sk).pdf` |
+| *TCP/IP Illustrated, Volume 2: The Implementation* — Stevens & Wright | 4.4BSD-Lite TCP/IP 协议栈实现、socket 层、内核数据结构与源码 | [InformIT](https://www.informit.com/store/tcp-ip-illustrated-volume-2-paperback-the-implementation-9780134760131) | `图片/书籍/TCPIP illustrated. Volume 2, The implementation (Stevens, W. Richard, Wright, Gary R) (z-library.sk, 1lib.sk, z-lib.sk).pdf` |
+| *TCP/IP Illustrated, Volume 3* — Stevens | T/TCP、HTTP、NNTP、UNIX 域协议；适合作为协议演进与实现史参考 | [InformIT](https://www.informit.com/store/tcp-ip-illustrated-volume-3-tcp-for-transactions-http-9780134457109) | `图片/书籍/TCPIP Illustrated, Volume 3 TCP for Transactions, HTTP, NNTP, and the UNIX Domain Protocols (W. Richard Stevens) (z-library.sk, 1lib.sk, z-lib.sk).pdf` |
+| *UNIX Network Programming, Volume 1*, 3rd ed. — Stevens et al. | POSIX socket、阻塞/非阻塞 I/O、并发服务器 | [InformIT](https://www.informit.com/store/unix-network-programming-volume-1-the-sockets-networking-9780131411555) | `图片/书籍/UNIX Network Programming, Volume 1 The Sockets Networking API, 3rd Edition (W. Richard Stevens, Bill Fenner etc.) (z-library.sk, 1lib.sk, z-lib.sk).pdf` |
+| *High Performance Computing: Modern Systems and Practices*, 2nd ed. — Thomas Sterling, Matthew Anderson et al. | 集群、并行计算、GPU 加速、性能监控、存储与文件系统 | [Elsevier](https://shop.elsevier.com/books/high-performance-computing/sterling/978-0-12-823035-0) | `图片/书籍/High Performance Computing Modern Systems and Practices (Thomas Sterling, Matthew Anderson etc.) (z-library.sk, 1lib.sk, z-lib.sk).epub` |
+| *Data Storage Architectures and Technologies* — Jiwu Shu | 存储设备、RAID、文件系统、网络存储、分布式存储、可靠性 | [Springer](https://link.springer.com/book/10.1007/978-981-97-3534-1) | `图片/书籍/数据存储架构与技术 (第2版) (舒继武) (z-library.sk, 1lib.sk, z-lib.sk).epub` |
+| *Inside Solid State Drives*, 2nd ed. | NAND、FTL、GC、写放大、ECC、PCIe/NVMe | [Springer](https://link.springer.com/book/10.1007/978-981-13-0599-3) | `图片/书籍/深入浅出SSD：固态存储核心技术、原理与实战 (SSDFans) (z-library.sk, 1lib.sk, z-lib.sk).epub` |
+| *Designing Data-Intensive Applications* — Martin Kleppmann | 一致性、复制、分区、故障、数据系统架构 | [作者官网](https://martin.kleppmann.com/2017/03/27/designing-data-intensive-applications.html) | `图片/书籍/Designing Data-Intensive Applications The Big Ideas Behind Reliable, Scalable, and Maintainable Systems (Martin Kleppmann) (z-library.sk, 1lib.sk, z-lib.sk).pdf` |
 
 #### 高性能网络与存储的活文档
 
