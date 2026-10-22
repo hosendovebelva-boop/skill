@@ -19,22 +19,22 @@ description: |
 
 ### 基本搜索
 ```bash
-python .claude/skills/note-locator/scripts/locate.py "关键词"
+python3 ~/.claude/skills/note-locator/scripts/locate.py "关键词"
 ```
 
 ### 指定搜索目录
 ```bash
-python .claude/skills/note-locator/scripts/locate.py "关键词" --path "C++基础"
+python3 ~/.claude/skills/note-locator/scripts/locate.py "关键词" --path "C++基础"
 ```
 
 ### 只返回路径（不解析链接）
 ```bash
-python .claude/skills/note-locator/scripts/locate.py "关键词" --no-links
+python3 ~/.claude/skills/note-locator/scripts/locate.py "关键词" --no-links
 ```
 
 ### 显示更多候选结果
 ```bash
-python .claude/skills/note-locator/scripts/locate.py "关键词" --top 5
+python3 ~/.claude/skills/note-locator/scripts/locate.py "关键词" --top 5
 ```
 
 ## 输出格式
@@ -59,10 +59,10 @@ python .claude/skills/note-locator/scripts/locate.py "关键词" --top 5
 
 | 用户请求 | 执行命令 |
 |---------|---------|
-| "找一下虚函数的笔记" | `python .claude/skills/note-locator/scripts/locate.py "虚函数"` |
-| "智能指针相关的笔记有哪些" | `python .claude/skills/note-locator/scripts/locate.py "智能指针"` |
-| "TCP编程在哪个目录" | `python .claude/skills/note-locator/scripts/locate.py "TCP编程"` |
-| "搜索关于epoll的内容" | `python .claude/skills/note-locator/scripts/locate.py "epoll"` |
+| "找一下虚函数的笔记" | `python3 ~/.claude/skills/note-locator/scripts/locate.py "虚函数"` |
+| "智能指针相关的笔记有哪些" | `python3 ~/.claude/skills/note-locator/scripts/locate.py "智能指针"` |
+| "TCP编程在哪个目录" | `python3 ~/.claude/skills/note-locator/scripts/locate.py "TCP编程"` |
+| "搜索关于epoll的内容" | `python3 ~/.claude/skills/note-locator/scripts/locate.py "epoll"` |
 
 ## 注意事项
 

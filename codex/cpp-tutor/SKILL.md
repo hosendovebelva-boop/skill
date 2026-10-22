@@ -20,6 +20,7 @@ description: |
 2. **建立知识关联**，帮助学生构建完整的知识图谱
 3. **深入底层原理**，不满足于表面讲解
 4. **强制Modern C++风格**，培养良好的工程习惯
+5. **区分规范保证、实现行为与工程建议**，避免把教材经验当成标准条文
 
 ---
 
@@ -27,31 +28,42 @@ description: |
 
 ### 第一步：定位相关笔记
 
-**必须首先调用 `note-locator`** 查找用户提到的知识点：
+优先调用 `note-locator` 查找用户提到的知识点；如果该 Skill 不可用，再用 `rg` 搜索 vault：
 
 ```bash
-python .claude/skills/note-locator/scripts/locate.py "用户提到的关键词"
+python3 ~/.agents/skills/note-locator/scripts/locate.py "用户提到的关键词"
 ```
 
 如果用户问题涉及多个概念，分别搜索每个关键词：
 ```bash
 # 例如用户问："右值引用和移动语义的关系"
-python .claude/skills/note-locator/scripts/locate.py "右值引用"
-python .claude/skills/note-locator/scripts/locate.py "移动语义"
+python3 ~/.agents/skills/note-locator/scripts/locate.py "右值引用"
+python3 ~/.agents/skills/note-locator/scripts/locate.py "移动语义"
 ```
 
 ### 第二步：读取笔记内容
 
 使用 Read 工具读取：
 1. **目标笔记**（最匹配的笔记）
-2. **关联笔记**（至少读取2-3个相关联的笔记）
+2. **真正影响当前问题的关联笔记**；不要为了凑数量读取无关内容
 
 这一步是为了：
 - 了解学生已经写过什么
 - 发现可以建立的知识关联
 - 避免重复学生已知的内容
 
-### 第三步：构建教学响应
+学生笔记用于判断学习上下文，**不作为事实的最高权威来源**。
+
+### 第三步：选择并核验权威来源
+
+当回答涉及标准保证、未定义/未指定/实现定义行为、并发内存模型、ABI、系统调用语义、协议字段或版本差异时，先读 `references/authority-sources.md`，按领域选择规范、官方文档和本地教材。
+
+- 先确认当前讨论的是哪一层：语言/协议规范、特定平台实现，还是工程最佳实践。
+- 只有实际核对过条款、章节、Item 或页码，才写精确编号。
+- 不能确认原文时用自己的话概括，不凭记忆制造直接引语。
+- 普通概念题引用 1 个最相关来源即可；争议点或跨层问题再并列多个来源。
+
+### 第四步：构建教学响应
 
 基于读取的笔记内容，按照下方的讲解框架进行教学。
 
@@ -117,21 +129,26 @@ python .claude/skills/note-locator/scripts/locate.py "移动语义"
 
 ### 4. 权威引用 (Authority)
 
-**必须引用至少一本权威书籍的相关论述**：
+权威来源不是固定书单排序，而要和论断类型匹配。完整路由与本地书籍位置见 `references/authority-sources.md`。
+
+| 论断 | 优先依据 | 教材的作用 |
+|---|---|---|
+| C++ 语义、有效程序、UB、标准库保证 | C++ 标准草案/正式标准、实现官方文档 | 帮助解释条文和建立直觉 |
+| POSIX/Linux API、返回值、`errno`、边界行为 | POSIX、Linux man-pages、内核文档 | TLPI 等用于解释机制与实例 |
+| TCP/IP、HTTP、DNS 等协议行为 | 当前 RFC / 协议官方规范 | Stevens、网络教材用于解释报文流与实现 |
+| ABI、对象布局、编译器扩展 | 目标平台 ABI、GCC/Clang/MSVC 文档 | 教材用于解释常见实现，不冒充跨平台保证 |
+| 工程写法与设计取舍 | 项目约束、实测数据、经典实践书 | 明确标成“建议”，不要写成“标准规定” |
+
+回答里应明确标识来源层级，例如：
 
 ```markdown
-> 📚 **《Effective Modern C++》Item 23** 指出：
-> "std::move 不移动任何东西，std::forward 也不转发任何东西。
-> 在运行时，它们什么都不做。它们不产生任何可执行代码，一个字节都没有。"
+### 权威依据
+- **规范保证**：C++ working draft `[条款]` —— [用自己的话概括]
+- **实现行为**：Linux `epoll(7)` / GCC 文档 —— [适用平台与版本]
+- **教材解释**：《Effective Modern C++》Item 23 —— [该条目帮助理解什么]
 ```
 
-**权威来源优先级**：
-1. 《Effective Modern C++》 - 现代C++最佳实践
-2. 《Effective C++》 - 经典C++准则
-3. 《Effective STL》 - STL使用指南
-4. 《Linux多线程服务端编程》 - 网络/并发编程
-5. 《CSAPP》(深入理解计算机系统) - 底层原理
-6. 《Modern Operating Systems》 - 操作系统概念
+如果没有核验到精确条款，只写来源名称和结论层级，不虚构章节、页码或引文。
 
 ### 5. 笔记关联 (Connect)
 
@@ -224,8 +241,9 @@ delete resource;  // 容易忘记，且异常不安全
 ...
 
 ## 权威出处
-> 📚 《书名》Item X：
-> "[引文]"
+- **规范/官方来源**：[条款、man page、RFC 或实现文档；已核验时才写编号]
+- **教材解释**：《书名》[章节或 Item；已核验时才写编号]
+- **适用边界**：[标准保证 / 特定实现 / 工程建议]
 
 ## 与你笔记的关联
 | 笔记 | 关联点 |
@@ -259,7 +277,7 @@ delete resource;  // 容易忘记，且异常不安全
 > `[建议路径]/[建议文件名].md`
 ```
 
-然后按照正常框架讲解，但在最后提供一个**可直接使用的笔记模板**。
+然后按 `references/authority-sources.md` 选择与问题层级相匹配的来源进行讲解；只有用户准备记笔记时，才在最后提供可直接使用的笔记模板。
 
 ### 场景2：笔记内容有误
 
@@ -271,7 +289,7 @@ delete resource;  // 容易忘记，且异常不安全
 > 在你的 [[笔记名]] 中，有一处需要修正：
 > - **原文**：[错误内容]
 > - **修正**：[正确内容]
-> - **依据**：《书名》Item X
+> - **依据**：[规范条款 / 官方文档 / 已核验的书籍章节]
 ```
 
 ### 场景3：用户问的是代码问题
@@ -305,8 +323,9 @@ delete resource;  // 容易忘记，且异常不安全
 1. ❌ **禁止只复述笔记内容** — 必须有深度扩展
 2. ❌ **禁止使用 C with Classes 风格代码** — 强制 Modern C++
 3. ❌ **禁止孤立讲解** — 必须建立笔记关联
-4. ❌ **禁止无出处的断言** — 必须引用权威来源
-5. ❌ **禁止跳过定位步骤** — 必须先调用 note-locator
+4. ❌ **禁止混淆来源层级** — 教材建议不能冒充标准保证，单一实现不能冒充跨平台语义
+5. ❌ **禁止伪造引用** — 未核验时不要写精确条款、页码或直接引语
+6. ❌ **禁止跳过定位步骤** — 优先用 note-locator；不可用时才退回 vault 搜索
 
 ---
 
@@ -323,7 +342,7 @@ delete resource;  // 容易忘记，且异常不安全
    - 定位：值类别领域，关联 [[13.1]], [[13.2]], [[独享智能指针]]
    - 澄清：仅是类型转换，不产生代码
    - 深度：编译器视角 + 内存视角
-   - 引用：《EMC++》Item 23
+   - 依据：先核对语言规则，再用《Effective Modern C++》Item 23 辅助解释
    - 关联：指出 [[13.2]] 可以补充这一点
    - 代码：unique_ptr 的正确移动方式
    - 延伸：std::forward、引用折叠
@@ -332,17 +351,17 @@ delete resource;  // 容易忘记，且异常不安全
 
 ## 知识领域映射
 
-当识别用户问题时，参考以下领域分类：
+识别领域后再选择来源，不要先选一本书再硬套问题：
 
-| 领域 | 关键词 | 主要参考书 |
-|-----|--------|-----------|
-| 值类别 & 移动 | move, 右值, 左值, forward, 移动语义 | EMC++ Item 23-30 |
-| 智能指针 | unique_ptr, shared_ptr, weak_ptr, RAII | EMC++ Item 18-22 |
-| OOP & 多态 | 虚函数, 继承, vtable, override | EC++ Item 32-40 |
-| 模板 | template, SFINAE, 特化, 类型萃取 | EC++ Item 41-48 |
-| 并发 | thread, mutex, atomic, 条件变量 | EMC++ Item 35-40, muduo |
-| 网络编程 | TCP, UDP, socket, epoll, select | muduo, 网络编程 |
-| 内存 & 编译 | 栈帧, 堆, 链接, ODR, inline | CSAPP |
+| 领域 | 关键词 | 来源入口 |
+|---|---|---|
+| C++ 语言与标准库 | 值类别、模板、容器、对象生命周期、并发 | C++ 标准/实现文档 + C++ 类本地教材 |
+| Linux/POSIX | 进程、线程、信号、文件、`epoll`、`mmap` | POSIX、man-pages、内核文档 + TLPI |
+| 网络协议 | TCP、UDP、HTTP、DNS、socket | 当前 RFC + UNP/TCP-IP Illustrated |
+| 编译器与 ABI | vtable、布局、name mangling、扩展、优化 | 目标 ABI 与编译器文档 + CSAPP/体系结构教材 |
+| 工程实践 | RAII、所有权、接口设计、性能权衡 | 项目约束、实测 + Effective 系列/Systems Performance |
+
+具体来源、适用边界和本地 PDF 路径见 `references/authority-sources.md`。
 
 ---
 

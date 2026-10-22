@@ -26,7 +26,7 @@ description: |
 使用辅助脚本快速获取笔记的结构信息和质量指标：
 
 ```bash
-python .claude/skills/note-extender/scripts/analyze.py "笔记路径.md"
+python3 ~/.claude/skills/note-extender/scripts/analyze.py "笔记路径.md"
 ```
 
 此脚本会输出：
@@ -95,6 +95,8 @@ python .claude/skills/note-extender/scripts/analyze.py "笔记路径.md"
 | **最佳实践** | 是否符合Modern C++风格？是否有反模式？ |
 | **底层原理** | 是否解释了编译器/运行时行为？ |
 | **关联性** | 是否提及相关概念？是否有适当的链接？ |
+| **图示合理性** | 复杂概念有无图辅助理解？已有图表的 Mermaid/SVG 选型是否符合下方"图表渲染选型规则"？ |
+| **代码时序图** | 有时间维度的示例代码，下面是否配了 Mermaid 时序图？见下方"示例代码配时序图" |
 
 ### 第五步：生成报告
 
@@ -222,6 +224,71 @@ python .claude/skills/note-extender/scripts/analyze.py "笔记路径.md"
 
 ---
 
+## 示例代码配时序图
+
+扩展内容里写示例代码时，紧跟在代码块下面用 Mermaid `sequenceDiagram` 画出这段代码的执行时序。审查已有笔记时，「有时间维度的示例代码但没有配时序图」按缺失点报出。
+
+- participant 写真实的执行主体：线程、进程、客户端/服务端、用户态/内核态、相互协作的对象。不要写 `main()`、`程序` 这类笼统名字。
+- 消息文本用代码里真实的函数名（`pthread_cond_wait`、`epoll_wait`、`push`），不要写"调用函数"。
+- **必须标出阻塞与等待区间**：用 `activate` / `deactivate`，或 `Note over X: 睡眠中`。谁在等、被谁唤醒，正是读源码时看不出来、需要图补上的信息。
+- 图下面配一句话，点明这张图揭示了什么代码本身没写出来的东西。
+
+**没有时间维度的代码不要硬画。** 只有一个执行主体的代码——语法演示、类型推导、模板特化、单一函数内的纯计算、容器 API 用法——画时序图只是把源码竖着重抄一遍。这类代码改用 `flowchart` 讲控制流，或者不配图。审查时也不要因为这类代码缺时序图而报缺失。
+
+---
+
+## 图表渲染选型规则 (Mermaid vs SVG)
+
+审查笔记中已有的图表、或在扩展建议中新增图表时，必须按本规则选择渲染方式。选型错误（如用 Mermaid 硬画复杂架构图导致布局混乱、交叉线爆炸）应在审查报告中作为改进点指出。
+
+### 判定原则
+
+**Mermaid 的本质是"声明关系 + 自动布局"**：你只写节点和连线，位置由引擎决定。由此推出：
+
+- 图的信息核心是**拓扑/顺序关系**，且节点少（≤7~8 个）、层级浅 → 用 **Mermaid**（源码可读、易维护、随笔记一起编辑）
+- 图需要**精确的空间布局**——嵌套框、字段对齐、相对位置本身承载语义——或节点多、层级深 → 用 **SVG**（调用 obsidian-svg skill 生成）
+
+### 适合 Mermaid 的图（UML/软件工程常用图中的简单场景）
+
+| 图类型 | Mermaid 语法 | 说明 |
+|-------|-------------|------|
+| 时序图 | `sequenceDiagram` | 消息顺序天然线性，Mermaid 最擅长 |
+| 泳道图 | `flowchart` + `subgraph` | 泳道数不多时效果好 |
+| SQL/ER 关系图 | `erDiagram` | 表间关系是声明式的，天然契合 |
+| 简单状态机 | `stateDiagram-v2` | 状态数 ≤7~8 个 |
+| 简单流程图/调用链 | `flowchart TD/LR` | 节点少、层级浅 |
+
+简单流程图示例（适合 Mermaid 的典型规模）：
+
+````markdown
+```mermaid
+flowchart TD
+    User --> Nginx
+    Nginx --> Backend
+    Backend --> Redis
+    Backend --> MySQL
+```
+````
+
+### 必须改用 SVG 的图
+
+图一旦具有以下任一特征，Mermaid 自动布局会失控（节点挤压、连线交叉、层级错乱），必须用 SVG：
+
+- **复杂状态机**：状态超过 7~8 个（转移边随状态数平方增长，自动布局不可读）
+- **深层结构图**：结构超过 7~8 层
+- **MindMap / 思维导图**：需要放射状布局与视觉权重控制
+- **Linux 内核数据结构**：task_struct、页表、VFS 等指针关系图，需要框内字段精确排布
+- **硬件架构图**：SSD Architecture、CPU Block Diagram——框图的空间位置即语义
+- **网络拓扑**：设备位置、区域划分需要精确摆放
+- **Kubernetes / ROS 系统架构**：多层嵌套（如 Cluster > Node > Pod > Container），Mermaid 的 subgraph 嵌套一深就失控
+- **UI/XML 布局图**：图本身就在描述空间布局，必须所见即所得
+
+### 快速判定口诀
+
+> 数一数：**节点/状态 > 8、结构 > 7~8 层、或"位置本身有含义"**——三者占其一就用 SVG，否则用 Mermaid。
+
+---
+
 ## 输出格式
 
 ```markdown
@@ -289,3 +356,4 @@ python .claude/skills/note-extender/scripts/analyze.py "笔记路径.md"
 2. **不过度扩展**: 只补充关键缺失，避免让笔记变得臃肿
 3. **可操作性**: 建议必须具体、可执行
 4. **引用规范**: 必须注明知识来源（书籍条款号）
+5. **图表选型**: 新增或点评图表前，先过一遍"图表渲染选型规则 (Mermaid vs SVG)"，选错渲染方式视为质量问题
